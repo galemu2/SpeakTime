@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Speak Time</string>
+    <string name="app_icon">Application Icon - Watch</string>
+    <string name="start_time">START</string>
+    <string name="end_time">STOP</string>
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
+</resources>
