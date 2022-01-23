@@ -14,7 +14,7 @@ data class SpeakTimeSchedule(
     var enabled: Boolean = true,
     var fullTime: Boolean = false
 
-) {
+) {// todo: fullTime may be delebed soon
 
 
 

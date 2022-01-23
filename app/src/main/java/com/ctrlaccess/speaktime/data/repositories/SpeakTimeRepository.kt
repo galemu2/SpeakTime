@@ -8,15 +8,10 @@ import javax.inject.Inject
 @ViewModelScoped
 class SpeakTimeRepository @Inject constructor(private val speakTimeDao: SpeakTimeDao) {
 
-
     val schedule = speakTimeDao.getSchedule()
 
     suspend fun updateSchedule(schedule: SpeakTimeSchedule){
         speakTimeDao.updateSchedule(schedule = schedule)
-    }
-
-    suspend fun insertInitialSchedule(schedule: SpeakTimeSchedule){
-        speakTimeDao.insertSchedule(schedule = schedule)
     }
 
 }

@@ -48,7 +48,7 @@ class SpeakTimeViewModel @Inject constructor(private val repository: SpeakTimeRe
     val schedule: StateFlow<RequestState<SpeakTimeSchedule>>
         get() = _schedule
 
-    fun getSpeakTimeSchedule() {
+    private fun getSpeakTimeSchedule() {
         _schedule.value = RequestState.Loading
 
         try {
@@ -73,15 +73,15 @@ class SpeakTimeViewModel @Inject constructor(private val repository: SpeakTimeRe
         }
     }
 
-    var startTimeCalendar: Calendar by mutableStateOf(Calendar.getInstance()).apply {
+    var fakeStartTime: Calendar by mutableStateOf(Calendar.getInstance()).apply {
 //        this.value.set(Calendar.MINUTE, this.value.get(Calendar.MINUTE).plus(1))
         this.value.set(Calendar.SECOND, 0)
         this.value.set(Calendar.MILLISECOND, 0)
     }
 
-    var stopTimeCalendar: Calendar by mutableStateOf(Calendar.getInstance().apply {
+    var fakeStopTime: Calendar by mutableStateOf(Calendar.getInstance().apply {
 //        set(Calendar.HOUR, startTimeCalendar.get(Calendar.HOUR).plus(1))
-        set(Calendar.MINUTE, startTimeCalendar.get(Calendar.MINUTE).plus(2))
+        set(Calendar.MINUTE, fakeStartTime.get(Calendar.MINUTE).plus(2))
         set(Calendar.SECOND, 0)
         set(Calendar.MILLISECOND, 0)
     })

@@ -14,8 +14,4 @@ interface SpeakTimeDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateSchedule(schedule: SpeakTimeSchedule)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSchedule(schedule: SpeakTimeSchedule)
-
-
 }

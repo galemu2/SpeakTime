@@ -1,11 +1,12 @@
 package com.ctrlaccess.speaktime
 
 import android.app.AlarmManager
-import android.app.PendingIntent
+import android.app.PendingIntent.*
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -35,18 +36,17 @@ class MainActivity : ComponentActivity() {
             }
         }
         val value = viewModel.schedule.value
-        if(value is RequestState.Success){
+        if (value is RequestState.Success) {
             setupAlarmManager(value.data.startTime.timeInMillis)
             setupCancelingAlarm(value.data.stopTime.timeInMillis)
+            Log.d("TAG", "background setup")
         }
-
-
     }
 
     private fun setupCancelingAlarm(stopTime: Long) {
         val intent = Intent(this, SpeakTimeBroadcastReceiver::class.java)
         intent.action = ACTION_CANCEL_ALARM
-        val pendingIntent = PendingIntent.getBroadcast(
+        val pendingIntent = getBroadcast(
             this,
             0,
             intent,
@@ -59,21 +59,20 @@ class MainActivity : ComponentActivity() {
             stopTime,
             pendingIntent
         )
-
     }
 
     private fun setupAlarmManager(startTime: Long) {
         val intent = Intent(this, SpeakTimeService::class.java)
 
         val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PendingIntent.getForegroundService(
+            getForegroundService(
                 this,
                 0,
                 intent,
                 0
             )
         } else {
-            PendingIntent.getService(
+            getService(
                 this,
                 0,
                 intent,
@@ -81,7 +80,6 @@ class MainActivity : ComponentActivity() {
             )
         }
         alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
 
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
@@ -92,7 +90,6 @@ class MainActivity : ComponentActivity() {
 
 
         /*
-
          alarmManager.setExact(
            AlarmManager.RTC_WAKEUP,
           viewModel.startTimeCalendar.timeInMillis,
@@ -108,6 +105,6 @@ class MainActivity : ComponentActivity() {
             },
             Handler(Looper.getMainLooper())
         )
-*/
+        */
     }
 }

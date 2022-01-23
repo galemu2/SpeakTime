@@ -53,10 +53,10 @@ object SpeakTimeModule {
                 values.put("id", 0)
                 values.put("startTime", startTime.timeInMillis.toString())
                 values.put("stopTime", stopTime.timeInMillis.toString())
-                values.put("enabled", "true")
-                values.put("fullTime", "false")
+                values.put("enabled",1)
+                values.put("fullTime", 0)
 
-                val success = db.insert("schedule", SQLiteDatabase.CONFLICT_IGNORE, values)
+                val success = db.insert("schedule", SQLiteDatabase.CONFLICT_REPLACE, values)
 
             }
         })

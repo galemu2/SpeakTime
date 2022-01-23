@@ -36,8 +36,8 @@ fun CancelSpeakTime(
 ) {
     var isChecked by mutableStateOf(enabled)
 
-    val enabledText = stringResource(id = R.string.enabled)
-    val disabledText = stringResource(id = R.string.disabled)
+    val enabledText = stringResource(id = R.string.enable)
+    val disabledText = stringResource(id = R.string.disable)
     Button(
         modifier = modifier
             .fillMaxWidth()
@@ -60,7 +60,7 @@ fun CancelSpeakTime(
             modifier = Modifier
                 .align(CenterVertically)
                 .wrapContentSize(),
-            text = if (isChecked) enabledText else disabledText,
+            text = if (isChecked) disabledText else enabledText,
             color = Color.White
         )
     }
@@ -229,13 +229,15 @@ fun CustomDialog(
     AndroidView(
         factory = { context ->
             TimePicker(context).apply {
-
+                setIs24HourView(false)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    hour = calendar.get(Calendar.HOUR)
+                    hour = calendar.get(Calendar.HOUR_OF_DAY)
                     minute = calendar.get(Calendar.MINUTE)
+
                 } else {
-                    currentHour = calendar.get(Calendar.HOUR)
+                    currentHour = calendar.get(Calendar.HOUR_OF_DAY)
                     currentMinute = calendar.get(Calendar.MINUTE)
+
                 }
             }
         },
@@ -243,7 +245,7 @@ fun CustomDialog(
         update = { timePicker ->
 
             timePicker.setOnTimeChangedListener { _, hour, minute ->
-                calendar.set(Calendar.HOUR, hour)
+                calendar.set(Calendar.HOUR_OF_DAY, hour)
                 calendar.set(Calendar.MINUTE, minute)
                 timePickerUpdateCalendar(calendar)
             }
