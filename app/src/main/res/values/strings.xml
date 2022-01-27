@@ -1,9 +1,20 @@
 <resources>
     <string name="app_name">Speak Time</string>
     <string name="app_icon">Application Icon - Watch</string>
+
+    <!--UI text-->
     <string name="start_time">START</string>
     <string name="end_time">STOP</string>
 
+    <!--UI button text-->
     <string name="enable">ENABLE</string>
     <string name="disable">DISABLE</string>
+
+    <!--notification text-->
+    <string name="content_title">Speak Time</string>
+    <string name="content_description">Time announces when screen wakes</string>
+
+    <!-- Alert Dialog buttons-->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 </resources>

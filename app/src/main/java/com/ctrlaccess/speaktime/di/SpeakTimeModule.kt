@@ -9,6 +9,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.ctrlaccess.speaktime.data.SpeakTimeDao
 import com.ctrlaccess.speaktime.data.SpeakTimeDatabase
 import com.ctrlaccess.speaktime.data.models.SpeakTimeTypeConverters
+import com.ctrlaccess.speaktime.data.repositories.SpeakTimeRepository
+import com.ctrlaccess.speaktime.ui.viewModels.SpeakTimeViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -65,10 +67,19 @@ object SpeakTimeModule {
 
 
     }
+
     @Provides
     @Singleton
     fun provideSpeakTimeDao(database: SpeakTimeDatabase) :SpeakTimeDao{
         return database.speakTimeDao()
     }
 
+    @Provides
+    @Singleton
+    fun provideRepository(speakTimeDao: SpeakTimeDao) = SpeakTimeRepository(speakTimeDao = speakTimeDao)
+
+
+    @Provides
+    @Singleton
+    fun provideViewModel(repository: SpeakTimeRepository) = SpeakTimeViewModel(repository = repository)
 }
