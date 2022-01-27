@@ -1,8 +1,6 @@
 package com.ctrlaccess.speaktime.ui
 
 import android.annotation.SuppressLint
-import android.os.Build
-import android.widget.TimePicker
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,7 +8,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,11 +22,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.ctrlaccess.speaktime.R
-import com.ctrlaccess.speaktime.data.models.SpeakTimeSchedule
-import com.ctrlaccess.speaktime.util.convertToTime
 import com.ctrlaccess.speaktime.ui.theme.*
+import com.ctrlaccess.speaktime.util.convertToTime
 import java.util.*
 
 @SuppressLint("UnrememberedMutableState")
@@ -177,152 +176,6 @@ fun StopTime(
         }
 
     }
-}
-
-@SuppressLint("UnrememberedMutableState")
-@Composable
-fun DisplayCustomDialog(
-    dialogState: (Boolean) -> Unit,
-    updateCalendar: (SpeakTimeSchedule) -> Unit,
-    schedule: SpeakTimeSchedule,
-    tabIndex: Int
-) {
-
-
-    AlertDialog(
-        onDismissRequest = {
-            dialogState(false)
-        },
-        text = {
-            CustomDialog(
-                tabIndex = tabIndex,
-                schedule = schedule,
-                timePickerUpdateCalendar = updateCalendar
-            )
-        },
-        confirmButton = {
-            Button(onClick = {
-                updateCalendar(schedule)
-                dialogState(false)
-            }) {
-                Text(text = stringResource(id = R.string.ok))
-            }
-        },
-        dismissButton = {
-            Button(onClick = { dialogState(false) }) {
-                Text(text = stringResource(id = R.string.cancel))
-            }
-        }
-    )
-
-}
-
-@Composable
-fun CustomDialog(
-    modifier: Modifier = Modifier,
-    timePickerUpdateCalendar: (SpeakTimeSchedule) -> Unit,
-    schedule: SpeakTimeSchedule,
-    tabIndex: Int = 0
-) {
-
-    var startTimeCalendar by remember { mutableStateOf(schedule.startTime )}
-    var stopTimeCalendar by remember { mutableStateOf(schedule.stopTime )}
-
-    var selectedTabIndex by remember { mutableStateOf(tabIndex) }
-    LaunchedEffect(key1 = tabIndex) {
-        selectedTabIndex = tabIndex
-        startTimeCalendar = schedule.startTime
-        stopTimeCalendar = schedule.stopTime
-    }
-    val start = stringResource(id = R.string.start_time)
-    val end = stringResource(id = R.string.end_time)
-    val tabs = listOf(start, end)
-
-    Column(modifier = Modifier) {
-
-        TabRow(selectedTabIndex = selectedTabIndex) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = index == selectedTabIndex,
-                    onClick = { selectedTabIndex = index },
-                    text = { Text(text = title) })
-            }
-        }
-
-        when (selectedTabIndex) {
-            0 -> {
-                TimePickerView(
-                    modifier = modifier,
-                    calendar = startTimeCalendar,
-                    timePickerUpdateCalendar =  timePickerUpdateCalendar,
-                    schedule = schedule,
-                    tabIndex = tabIndex
-                )
-            }
-            1 -> {
-                TimePickerView(
-                    modifier = modifier,
-                    calendar = stopTimeCalendar,
-                    timePickerUpdateCalendar = timePickerUpdateCalendar,
-                    schedule = schedule,
-                    tabIndex = tabIndex
-
-                )
-            }
-        }
-    }
-
-}
-
-@SuppressLint("UnrememberedMutableState")
-@Composable
-private fun TimePickerView(
-    modifier: Modifier = Modifier,
-    calendar: Calendar,
-    timePickerUpdateCalendar: (SpeakTimeSchedule) -> Unit,
-    schedule: SpeakTimeSchedule,
-    tabIndex: Int,
-) {
-/*    val context = LocalContext.current
-    var cal = if (tabIndex == 0) schedule.startTime else schedule.stopTime
-    var calendar by   mutableStateOf(cal)
-    LaunchedEffect(key1 = tabIndex) {
-        cal = if (tabIndex == 0) schedule.startTime else schedule.stopTime
-        calendar = cal
-    }*/
-    AndroidView(
-        factory = { context ->
-            TimePicker(context).apply {
-                setIs24HourView(false)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    hour = calendar.get(Calendar.HOUR_OF_DAY)
-                    minute = calendar.get(Calendar.MINUTE)
-
-                } else {
-                    currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-                    currentMinute = calendar.get(Calendar.MINUTE)
-
-                }
-            }
-        },
-        modifier = modifier,
-        update = { timePicker ->
-
-            timePicker.setOnTimeChangedListener { _, hour, minute ->
-                calendar.set(Calendar.HOUR_OF_DAY, hour)
-                calendar.set(Calendar.MINUTE, minute)
-
-            }
-            schedule.apply {
-                if(tabIndex == 0){
-                    startTime = calendar
-                }else{
-                    stopTime = calendar
-                }
-            }
-            timePickerUpdateCalendar(schedule)
-        }
-    )
 }
 
 
