@@ -16,6 +16,7 @@ import com.ctrlaccess.speaktime.R
 import com.ctrlaccess.speaktime.ui.viewModels.SpeakTimeViewModel
 import com.ctrlaccess.speaktime.util.Const
 import com.ctrlaccess.speaktime.util.Const.CHANNEL_ID
+import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.RequestState
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -52,7 +53,7 @@ class SpeakTimeService : Service() {
             }
 
             alarmManager.setExact(
-                AlarmManager.RTC,
+                AlarmManager.RTC_WAKEUP,
                 startTime,
                 startPendingIntent
             )
@@ -79,7 +80,7 @@ class SpeakTimeService : Service() {
             }
             */
             alarmManager.setExact(
-                AlarmManager.RTC,
+                AlarmManager.RTC_WAKEUP,
                 stopTime,
                 pendingIntent
             )
@@ -96,14 +97,14 @@ class SpeakTimeService : Service() {
         contentDescription = getString(R.string.content_description)
         speakTimeBroadcastReceiver = SpeakTimeBroadcastReceiver()
 
-
-/*        val schedule = viewModel.schedule.value
+        Toast.makeText(this, "SpeakTimeService: onCreate()", Toast.LENGTH_SHORT).show()
+        Log.d("TAG", "SpeakTimeService: onCreate()")
+        val schedule = viewModel.schedule.value
         if (schedule is RequestState.Success) {
-            Toast.makeText(this, "SpeakTimeService: onCreate()", Toast.LENGTH_SHORT).show()
-            Log.d("TAG", "SpeakTimeService: onCreate()")
+
             val time = schedule.data.stopTime
             stopSpeakTime(this, time.timeInMillis)
-        }*/
+        }
 
     }
 
@@ -139,23 +140,26 @@ class SpeakTimeService : Service() {
         val schedule = viewModel.schedule.value
         if (schedule is RequestState.Success) {
             if (schedule.data.enabled) {
-                val time = schedule.data.startTime.apply {
-                    set(Calendar.MINUTE, this.get(Calendar.MINUTE).plus(2))
+
+                val cal = Calendar.getInstance()
+                schedule.data.startTime = cal
+
+                schedule.data.startTime.apply {
+                    set(Calendar.MINUTE, cal.get(Calendar.MINUTE).plus(2))
                 }
-                startSpeakTime(this, time.timeInMillis)
-                schedule.data.apply {
-                    stopTime = time.apply {
-                        set(Calendar.MINUTE, this.get(Calendar.MINUTE).plus(4))
-                    }
-                    startTime = time
+                startSpeakTime(this, schedule.data.startTime.timeInMillis)
+
+                schedule.data.stopTime = cal
+                schedule.data.stopTime.apply {
+                    set(Calendar.MINUTE, cal.get(Calendar.MINUTE).plus(4))
                 }
-                viewModel.updateSchedule(schedule = schedule.data)
             }
+            viewModel.updateSchedule(schedule = schedule.data)
+            Log.d(TAG, "SpeakTimeService: onDestroy(): ${schedule.data}")
         }
+
         unregisterReceiver(speakTimeBroadcastReceiver)
         Toast.makeText(this, "SpeakTimeService: onDestroy()", Toast.LENGTH_SHORT).show()
-        Log.d("TAG", "SpeakTimeService: onDestroy()")
-
 
     }
 

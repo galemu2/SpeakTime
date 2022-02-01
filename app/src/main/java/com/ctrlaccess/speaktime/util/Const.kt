@@ -8,4 +8,5 @@ object Const {
 
     const val table = "schedule"
 
+    const val TAG = "TAG"
 }

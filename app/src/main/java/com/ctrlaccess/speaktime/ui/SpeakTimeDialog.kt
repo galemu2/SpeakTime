@@ -1,6 +1,8 @@
 package com.ctrlaccess.speaktime.ui
 
+import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.widget.TimePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -13,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import com.ctrlaccess.speaktime.R
 import com.ctrlaccess.speaktime.data.models.SpeakTimeSchedule
+import com.ctrlaccess.speaktime.util.Const.TAG
 import java.util.*
 
 
@@ -21,9 +24,10 @@ fun DisplayCustomDialog(
     dialogState: (Boolean) -> Unit,
     updateCalendar: (SpeakTimeSchedule) -> Unit,
     schedule: SpeakTimeSchedule,
-    tabIndex: Int
+    tabIndex: Int,
 ) {
 
+    val oldSchedule = schedule.copy()
 
     AlertDialog(
         modifier = Modifier.wrapContentSize(),
@@ -46,7 +50,10 @@ fun DisplayCustomDialog(
             }
         },
         dismissButton = {
-            Button(onClick = { dialogState(false) }) {
+            Button(onClick = {
+                updateCalendar(oldSchedule)
+                dialogState(false)
+            }) {
                 Text(text = stringResource(id = R.string.cancel))
             }
         }
@@ -59,18 +66,25 @@ fun CustomDialog(
     modifier: Modifier = Modifier,
     timePickerUpdateCalendar: (SpeakTimeSchedule) -> Unit,
     schedule: SpeakTimeSchedule,
-    tabIndex: Int = 0
+    tabIndex: Int = 0,
 ) {
 
     var startTimeCalendar by remember { mutableStateOf(schedule.startTime) }
     var stopTimeCalendar by remember { mutableStateOf(schedule.stopTime) }
 
     var selectedTabIndex by remember { mutableStateOf(tabIndex) }
-    LaunchedEffect(key1 = tabIndex) {
+
+    LaunchedEffect(key1 = true) {
         selectedTabIndex = tabIndex
+        Log.d(
+            TAG, "CustomDialog#" +
+                    "\nselectedTabIndex = $selectedTabIndex" +
+                    "\ntabIndex = $tabIndex"
+        )
         startTimeCalendar = schedule.startTime
         stopTimeCalendar = schedule.stopTime
     }
+
     val start = stringResource(id = R.string.start_time)
     val end = stringResource(id = R.string.end_time)
     val tabs = listOf(start, end)

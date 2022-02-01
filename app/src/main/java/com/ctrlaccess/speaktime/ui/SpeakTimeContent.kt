@@ -37,14 +37,7 @@ fun SpeakTimeContent(
 
             if (schedule.enabled) {
                 Log.d("TAG", "is Enabled; setting up start and stop time")
-/*                SpeakTimeService.startSpeakTime(
-                    context = context,
-                    startTime = schedule.startTime.timeInMillis
-                )*/
-/*                SpeakTimeService.stopSpeakTime(
-                    context = context,
-                    stopTime = schedule.stopTime.timeInMillis
-                )*/
+
             }
 
         } else if (requestState is RequestState.Error) {
@@ -60,6 +53,7 @@ fun SpeakTimeContent(
     if (dialogState) {
         DisplayCustomDialog(
             tabIndex = tabIndex,
+
             schedule = schedule,
             updateCalendar = {
                 schedule = it
@@ -80,6 +74,7 @@ fun SpeakTimeContent(
             },
             dialogState = {
                 dialogState = it
+
             })
     }
 
@@ -97,10 +92,10 @@ fun SpeakTimeContent(
         SpeakTimeItem(
             modifier = Modifier
                 .background(color = Color.Transparent),
+            requestState = requestState,
             startTimeCalendar = schedule.startTime,
             stopTimeCalendar = schedule.stopTime,
             dialogState = { state, idx ->
-
                 dialogState = state
                 tabIndex = idx
             },
@@ -123,9 +118,18 @@ fun SpeakTimeItem(
     stopTimeCalendar: Calendar,
     dialogState: (Boolean, Int) -> Unit,
     enabled: Boolean,
-    updateEnabled: (Boolean) -> Unit
+    updateEnabled: (Boolean) -> Unit,
+    requestState: RequestState<SpeakTimeSchedule>
 ) {
 
+    var startTime by remember { mutableStateOf(startTimeCalendar) }
+    var stopTime by remember { mutableStateOf(stopTimeCalendar) }
+    LaunchedEffect(key1 = requestState) {
+        if (requestState is RequestState.Success) {
+            startTime = requestState.data.startTime
+            stopTime = requestState.data.stopTime
+        }
+    }
     Column(
         modifier = modifier
             .padding(8.dp)
@@ -146,7 +150,7 @@ fun SpeakTimeItem(
                 verticalArrangement = Arrangement.Center
             ) {
                 StartTime(
-                    calendar = startTimeCalendar,
+                    calendar = startTime,
                     displayDialogState = dialogState
                 )
                 Spacer(
@@ -156,7 +160,7 @@ fun SpeakTimeItem(
                 )
 
                 StopTime(
-                    calendar = stopTimeCalendar,
+                    calendar = stopTime,
                     displayDialogState = dialogState
                 )
             }
