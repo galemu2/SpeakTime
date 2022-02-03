@@ -56,7 +56,6 @@ class SpeakTimeViewModel @Inject constructor(private val repository: SpeakTimeRe
 
                 repository.schedule.collect {
                     _schedule.value = RequestState.Success(it)
-                    Log.d("TAG", "ViewModel: Success")
                 }
             }
         } catch (e: Exception) {

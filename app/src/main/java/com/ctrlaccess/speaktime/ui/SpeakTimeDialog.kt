@@ -19,6 +19,7 @@ import com.ctrlaccess.speaktime.util.Const.TAG
 import java.util.*
 
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun DisplayCustomDialog(
     dialogState: (Boolean) -> Unit,
@@ -27,7 +28,13 @@ fun DisplayCustomDialog(
     tabIndex: Int,
 ) {
 
-    val oldSchedule = schedule.copy()
+    var startTime by  mutableStateOf(schedule.startTime)
+    var stopTime by   mutableStateOf(schedule.stopTime)
+
+    LaunchedEffect(key1 = true) {
+        Log.d(TAG, "DisplayCustomDialog: ")
+    }
+
 
     AlertDialog(
         modifier = Modifier.wrapContentSize(),
@@ -37,12 +44,20 @@ fun DisplayCustomDialog(
         text = {
             CustomDialog(
                 tabIndex = tabIndex,
-                schedule = schedule,
-                timePickerUpdateCalendar = updateCalendar
+                startTime = startTime,
+                stopTime = stopTime,
+                updateScheduleTimes = { startTimeCalendar, stopTimeCalendar ->
+                    startTime = startTimeCalendar
+                    stopTime = stopTimeCalendar
+                }
             )
         },
         confirmButton = {
             Button(onClick = {
+                schedule.apply {
+                    this.startTime = startTime
+                    this.stopTime = stopTime
+                }
                 updateCalendar(schedule)
                 dialogState(false)
             }) {
@@ -51,7 +66,6 @@ fun DisplayCustomDialog(
         },
         dismissButton = {
             Button(onClick = {
-                updateCalendar(oldSchedule)
                 dialogState(false)
             }) {
                 Text(text = stringResource(id = R.string.cancel))
@@ -64,13 +78,17 @@ fun DisplayCustomDialog(
 @Composable
 fun CustomDialog(
     modifier: Modifier = Modifier,
-    timePickerUpdateCalendar: (SpeakTimeSchedule) -> Unit,
-    schedule: SpeakTimeSchedule,
     tabIndex: Int = 0,
+    startTime: Calendar,
+    stopTime: Calendar,
+    updateScheduleTimes: (Calendar, Calendar) -> Unit
 ) {
 
-    var startTimeCalendar by remember { mutableStateOf(schedule.startTime) }
-    var stopTimeCalendar by remember { mutableStateOf(schedule.stopTime) }
+    LaunchedEffect(key1 = true) {
+        Log.d(TAG, "CustomDialog: ")
+    }
+    var startTimeCalendar by remember { mutableStateOf(startTime) }
+    var stopTimeCalendar by remember { mutableStateOf(stopTime) }
 
     var selectedTabIndex by remember { mutableStateOf(tabIndex) }
 
@@ -81,8 +99,7 @@ fun CustomDialog(
                     "\nselectedTabIndex = $selectedTabIndex" +
                     "\ntabIndex = $tabIndex"
         )
-        startTimeCalendar = schedule.startTime
-        stopTimeCalendar = schedule.stopTime
+
     }
 
     val start = stringResource(id = R.string.start_time)
@@ -111,24 +128,20 @@ fun CustomDialog(
                     modifier = modifier,
                     calendar = startTimeCalendar,
                 ) { startTimeCal ->
-                    schedule.apply {
-                        startTime = startTimeCal
-                    }
-                    timePickerUpdateCalendar(schedule)
+                    startTimeCalendar = startTimeCal
                 }
+
             }
             1 -> {
                 TimePickerView(
                     modifier = modifier,
                     calendar = stopTimeCalendar,
                 ) { stopTimeCal ->
-                    schedule.apply {
-                        stopTime = stopTimeCal
-                    }
-                    timePickerUpdateCalendar(schedule)
+                    stopTimeCalendar = stopTimeCal
                 }
             }
         }
+        updateScheduleTimes(startTimeCalendar, stopTimeCalendar)
     }
 
 }
@@ -139,6 +152,10 @@ private fun TimePickerView(
     calendar: Calendar,
     updateCalendar: (Calendar) -> Unit,
 ) {
+
+    LaunchedEffect(key1 = true) {
+        Log.d(TAG, "TimePickerView: ")
+    }
 
     AndroidView(
         modifier = modifier,

@@ -1,6 +1,7 @@
 package com.ctrlaccess.speaktime.ui
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,10 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ctrlaccess.speaktime.R
 import com.ctrlaccess.speaktime.ui.theme.*
+import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.convertToTime
 import java.util.*
 
@@ -34,6 +33,10 @@ fun CancelSpeakTime(
     enabled: Boolean,
     updateEnabled: (Boolean) -> Unit
 ) {
+
+    LaunchedEffect(key1 = true){
+        Log.d(TAG, "CancelSpeakTime: ")
+    }
     var isChecked by mutableStateOf(enabled)
 
     val enabledText = stringResource(id = R.string.enable)
@@ -73,7 +76,9 @@ fun StartTime(
     displayDialogState: (Boolean, Int) -> Unit,
     calendar: Calendar
 ) {
-
+    LaunchedEffect(key1 = true){
+        Log.d(TAG, "StartTime: ")
+    }
 
     Row(
         modifier = modifier
@@ -132,6 +137,10 @@ fun StopTime(
     displayDialogState: (Boolean, Int) -> Unit,
     calendar: Calendar
 ) {
+
+    LaunchedEffect(key1 = true){
+        Log.d(TAG, "StopTime: ")
+    }
     Row(
         modifier = modifier
             .fillMaxWidth()

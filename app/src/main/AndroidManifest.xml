@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ctrlaccess.speaktime">
 
-    <!--todo exact alarm may not be needed-->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
@@ -26,7 +25,7 @@
             </intent-filter>
         </activity>
         <receiver
-            android:name=".background.SpeakTimeBroadcastReceiver"
+            android:name=".background.SpeakTimeBroadcast"
             android:exported="false" />
         <service
             android:name=".background.SpeakTimeService"

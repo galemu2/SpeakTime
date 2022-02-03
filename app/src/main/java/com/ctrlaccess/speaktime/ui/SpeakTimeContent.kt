@@ -17,6 +17,7 @@ import com.ctrlaccess.speaktime.R
 import com.ctrlaccess.speaktime.background.SpeakTimeService
 import com.ctrlaccess.speaktime.data.models.SpeakTimeSchedule
 import com.ctrlaccess.speaktime.ui.viewModels.SpeakTimeViewModel
+import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.RequestState
 import java.util.*
 
@@ -25,6 +26,9 @@ fun SpeakTimeContent(
     viewModel: SpeakTimeViewModel
 ) {
 
+    LaunchedEffect(key1 = true) {
+        Log.d(TAG, "SpeakTimeContent: ")
+    }
     val requestState by viewModel.schedule.collectAsState()
     var schedule by remember { mutableStateOf(viewModel.initialSchedule) }
 
@@ -34,12 +38,9 @@ fun SpeakTimeContent(
         schedule = updateValues(requestState = requestState, viewModel = viewModel)
 
         if (requestState is RequestState.Success) {
-
             if (schedule.enabled) {
-                Log.d("TAG", "is Enabled; setting up start and stop time")
-
+                Log.d("TAG", "schedule.enabled: $schedule")
             }
-
         } else if (requestState is RequestState.Error) {
             val message = (requestState as RequestState.Error).error.message ?: "Unknown Error!"
             Toast.makeText(context, "ERROR: $message", Toast.LENGTH_SHORT).show()
@@ -53,28 +54,39 @@ fun SpeakTimeContent(
     if (dialogState) {
         DisplayCustomDialog(
             tabIndex = tabIndex,
-
             schedule = schedule,
-            updateCalendar = {
-                schedule = it
-                viewModel.updateSchedule(schedule = schedule)
-                if (tabIndex == 0) {
-                    SpeakTimeService.startSpeakTime(
-                        context = context,
-                        schedule.startTime.timeInMillis
-                    )
-                    Log.d("TAG", "SpeakTimeContent#startTime# index: $tabIndex")
-                } else {
-                    SpeakTimeService.stopSpeakTime(
-                        context = context,
-                        stopTime = schedule.stopTime.timeInMillis
-                    )
-                    Log.d("TAG", "SpeakTimeContent#stopTime# index: $tabIndex")
+            updateCalendar = { newSchedule ->
+                val today = Calendar.getInstance()
+                schedule.apply {
+                    startTime.apply {
+                        set(Calendar.YEAR, today.get(Calendar.YEAR))
+                        set(Calendar.MONTH, today.get(Calendar.MONTH))
+                        set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR))
+                        set(Calendar.HOUR, newSchedule.startTime.get(Calendar.HOUR))
+                        set(Calendar.MINUTE, newSchedule.startTime.get(Calendar.MINUTE))
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
+                    }
+
+                    stopTime.apply {
+                        set(Calendar.YEAR, today.get(Calendar.YEAR))
+                        set(Calendar.MONTH, today.get(Calendar.MONTH))
+                        set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR))
+                        set(Calendar.HOUR, newSchedule.stopTime.get(Calendar.HOUR))
+                        set(Calendar.MINUTE, newSchedule.stopTime.get(Calendar.MINUTE))
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
+                    }
                 }
+                viewModel.updateSchedule(schedule = schedule)
+                SpeakTimeService.startSpeakTime(
+                    context = context,
+                    schedule.startTime.timeInMillis
+                )
+
             },
             dialogState = {
                 dialogState = it
-
             })
     }
 
@@ -121,6 +133,10 @@ fun SpeakTimeItem(
     updateEnabled: (Boolean) -> Unit,
     requestState: RequestState<SpeakTimeSchedule>
 ) {
+
+    LaunchedEffect(key1 = true) {
+        Log.d(TAG, "SpeakTimeItem: ")
+    }
 
     var startTime by remember { mutableStateOf(startTimeCalendar) }
     var stopTime by remember { mutableStateOf(stopTimeCalendar) }

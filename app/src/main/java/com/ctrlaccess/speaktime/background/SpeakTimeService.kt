@@ -25,7 +25,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SpeakTimeService : Service() {
 
-    private lateinit var speakTimeBroadcastReceiver: SpeakTimeBroadcastReceiver
+    private lateinit var speakTimeBroadcastReceiver: SpeakTimeBroadcast
 
     @Inject
     lateinit var viewModel: SpeakTimeViewModel
@@ -41,7 +41,7 @@ class SpeakTimeService : Service() {
                     context,
                     0,
                     startIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntent.FLAG_NO_CREATE
                 )
             } else {
                 PendingIntent.getService(
@@ -64,7 +64,7 @@ class SpeakTimeService : Service() {
             val alarmManager: AlarmManager =
                 context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-            val intent = Intent(context, SpeakTimeBroadcastReceiver::class.java)
+            val intent = Intent(context, SpeakTimeBroadcast::class.java)
             intent.action = Const.ACTION_CANCEL_ALARM
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
@@ -95,7 +95,7 @@ class SpeakTimeService : Service() {
         super.onCreate()
         contentTitle = getString(R.string.content_title)
         contentDescription = getString(R.string.content_description)
-        speakTimeBroadcastReceiver = SpeakTimeBroadcastReceiver()
+        speakTimeBroadcastReceiver = SpeakTimeBroadcast()
 
         Toast.makeText(this, "SpeakTimeService: onCreate()", Toast.LENGTH_SHORT).show()
         Log.d("TAG", "SpeakTimeService: onCreate()")
