@@ -1,9 +1,6 @@
 package com.ctrlaccess.speaktime.ui.viewModels
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ctrlaccess.speaktime.data.models.SpeakTimeSchedule
@@ -48,11 +45,11 @@ class SpeakTimeViewModel @Inject constructor(private val repository: SpeakTimeRe
     val schedule: StateFlow<RequestState<SpeakTimeSchedule>>
         get() = _schedule
 
-    private fun getSpeakTimeSchedule() {
+      fun getSpeakTimeSchedule() {
         _schedule.value = RequestState.Loading
 
         try {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(Dispatchers.Main) {
 
                 repository.schedule.collect {
                     _schedule.value = RequestState.Success(it)
@@ -71,19 +68,5 @@ class SpeakTimeViewModel @Inject constructor(private val repository: SpeakTimeRe
             repository.updateSchedule(schedule = schedule)
         }
     }
-
-    var fakeStartTime: Calendar by mutableStateOf(Calendar.getInstance()).apply {
-//        this.value.set(Calendar.MINUTE, this.value.get(Calendar.MINUTE).plus(1))
-        this.value.set(Calendar.SECOND, 0)
-        this.value.set(Calendar.MILLISECOND, 0)
-    }
-
-    var fakeStopTime: Calendar by mutableStateOf(Calendar.getInstance().apply {
-//        set(Calendar.HOUR, startTimeCalendar.get(Calendar.HOUR).plus(1))
-        set(Calendar.MINUTE, fakeStartTime.get(Calendar.MINUTE).plus(2))
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-    })
-
 
 }

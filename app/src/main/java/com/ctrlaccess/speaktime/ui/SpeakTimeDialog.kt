@@ -19,21 +19,23 @@ import com.ctrlaccess.speaktime.util.Const.TAG
 import java.util.*
 
 
-@SuppressLint("UnrememberedMutableState")
 @Composable
 fun DisplayCustomDialog(
     dialogState: (Boolean) -> Unit,
-    updateCalendar: (SpeakTimeSchedule) -> Unit,
     schedule: SpeakTimeSchedule,
+    updateCalendar: (SpeakTimeSchedule) -> Unit,
     tabIndex: Int,
 ) {
 
-    var startTime by  mutableStateOf(schedule.startTime)
-    var stopTime by   mutableStateOf(schedule.stopTime)
+    val scheduleCopy by remember {mutableStateOf(schedule.copy())}
+    var startTime by remember { mutableStateOf(scheduleCopy.startTime) }
+    var stopTime by remember { mutableStateOf(scheduleCopy.stopTime) }
+
 
     LaunchedEffect(key1 = true) {
         Log.d(TAG, "DisplayCustomDialog: ")
     }
+
 
 
     AlertDialog(
@@ -54,11 +56,11 @@ fun DisplayCustomDialog(
         },
         confirmButton = {
             Button(onClick = {
-                schedule.apply {
+                scheduleCopy.apply {
                     this.startTime = startTime
                     this.stopTime = stopTime
                 }
-                updateCalendar(schedule)
+                updateCalendar(scheduleCopy)
                 dialogState(false)
             }) {
                 Text(text = stringResource(id = R.string.ok))
@@ -75,6 +77,7 @@ fun DisplayCustomDialog(
 
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun CustomDialog(
     modifier: Modifier = Modifier,
@@ -87,8 +90,8 @@ fun CustomDialog(
     LaunchedEffect(key1 = true) {
         Log.d(TAG, "CustomDialog: ")
     }
-    var startTimeCalendar by remember { mutableStateOf(startTime) }
-    var stopTimeCalendar by remember { mutableStateOf(stopTime) }
+    var startTimeCalendar by mutableStateOf(startTime)
+    var stopTimeCalendar by mutableStateOf(stopTime)
 
     var selectedTabIndex by remember { mutableStateOf(tabIndex) }
 

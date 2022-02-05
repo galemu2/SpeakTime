@@ -12,9 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ctrlaccess.speaktime.R
-import com.ctrlaccess.speaktime.background.SpeakTimeService
 import com.ctrlaccess.speaktime.data.models.SpeakTimeSchedule
 import com.ctrlaccess.speaktime.ui.viewModels.SpeakTimeViewModel
 import com.ctrlaccess.speaktime.util.Const.TAG
@@ -23,23 +23,22 @@ import java.util.*
 
 @Composable
 fun SpeakTimeContent(
-    viewModel: SpeakTimeViewModel
+    viewModel: SpeakTimeViewModel,
 ) {
 
-    LaunchedEffect(key1 = true) {
-        Log.d(TAG, "SpeakTimeContent: ")
-    }
     val requestState by viewModel.schedule.collectAsState()
+
     var schedule by remember { mutableStateOf(viewModel.initialSchedule) }
 
     val context = LocalContext.current
 
     LaunchedEffect(key1 = requestState) {
-        schedule = updateValues(requestState = requestState, viewModel = viewModel)
-
         if (requestState is RequestState.Success) {
+            schedule = updateValues(requestState = requestState, viewModel = viewModel)
             if (schedule.enabled) {
                 Log.d("TAG", "schedule.enabled: $schedule")
+            }else{
+                Log.d("TAG", "schedule.disabled: $schedule")
             }
         } else if (requestState is RequestState.Error) {
             val message = (requestState as RequestState.Error).error.message ?: "Unknown Error!"
@@ -52,10 +51,12 @@ fun SpeakTimeContent(
     var dialogState by remember { mutableStateOf(false) }
     var tabIndex by remember { mutableStateOf(0) }
     if (dialogState) {
+
         DisplayCustomDialog(
             tabIndex = tabIndex,
-            schedule = schedule,
+            schedule = schedule.copy(),
             updateCalendar = { newSchedule ->
+                Log.d(TAG, "SpeakTimeContent: updateCalendar()")
                 val today = Calendar.getInstance()
                 schedule.apply {
                     startTime.apply {
@@ -79,13 +80,16 @@ fun SpeakTimeContent(
                     }
                 }
                 viewModel.updateSchedule(schedule = schedule)
-                SpeakTimeService.startSpeakTime(
+
+
+/*            todo    SpeakTimeService.startSpeakTime(
                     context = context,
                     schedule.startTime.timeInMillis
-                )
+                )*/
 
             },
             dialogState = {
+                viewModel.getSpeakTimeSchedule()
                 dialogState = it
             })
     }
@@ -99,14 +103,12 @@ fun SpeakTimeContent(
                 id = R.drawable.ic_honeycomb
             ),
             contentScale = ContentScale.Crop,
-            contentDescription = ""
+            contentDescription = stringResource(id = R.string.backgroun_img_honeycomb)
         )
         SpeakTimeItem(
             modifier = Modifier
                 .background(color = Color.Transparent),
-            requestState = requestState,
-            startTimeCalendar = schedule.startTime,
-            stopTimeCalendar = schedule.stopTime,
+            schedule = schedule,
             dialogState = { state, idx ->
                 dialogState = state
                 tabIndex = idx
@@ -126,26 +128,12 @@ fun SpeakTimeContent(
 @Composable
 fun SpeakTimeItem(
     modifier: Modifier = Modifier,
-    startTimeCalendar: Calendar,
-    stopTimeCalendar: Calendar,
     dialogState: (Boolean, Int) -> Unit,
     enabled: Boolean,
     updateEnabled: (Boolean) -> Unit,
-    requestState: RequestState<SpeakTimeSchedule>
-) {
+    schedule: SpeakTimeSchedule,
+    ) {
 
-    LaunchedEffect(key1 = true) {
-        Log.d(TAG, "SpeakTimeItem: ")
-    }
-
-    var startTime by remember { mutableStateOf(startTimeCalendar) }
-    var stopTime by remember { mutableStateOf(stopTimeCalendar) }
-    LaunchedEffect(key1 = requestState) {
-        if (requestState is RequestState.Success) {
-            startTime = requestState.data.startTime
-            stopTime = requestState.data.stopTime
-        }
-    }
     Column(
         modifier = modifier
             .padding(8.dp)
@@ -166,7 +154,7 @@ fun SpeakTimeItem(
                 verticalArrangement = Arrangement.Center
             ) {
                 StartTime(
-                    calendar = startTime,
+                    calendar = schedule.startTime,
                     displayDialogState = dialogState
                 )
                 Spacer(
@@ -176,7 +164,7 @@ fun SpeakTimeItem(
                 )
 
                 StopTime(
-                    calendar = stopTime,
+                    calendar = schedule.stopTime,
                     displayDialogState = dialogState
                 )
             }
@@ -199,11 +187,14 @@ private fun updateValues(
     requestState: RequestState<SpeakTimeSchedule>,
     viewModel: SpeakTimeViewModel
 ): SpeakTimeSchedule {
-    return if (requestState is RequestState.Success) {
-        requestState.data
-    } else if (requestState is RequestState.Error) {
-        viewModel.initialSchedule
-    } else {
-        viewModel.initialSchedule
+
+    return when (requestState) {
+        is RequestState.Success -> {
+            requestState.data
+        }
+        else -> {
+            viewModel.initialSchedule
+        }
     }
+
 }

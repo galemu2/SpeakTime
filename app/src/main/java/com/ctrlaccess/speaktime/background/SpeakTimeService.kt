@@ -41,7 +41,7 @@ class SpeakTimeService : Service() {
                     context,
                     0,
                     startIntent,
-                    PendingIntent.FLAG_NO_CREATE
+                    0 // todo find correct flag
                 )
             } else {
                 PendingIntent.getService(
@@ -139,7 +139,7 @@ class SpeakTimeService : Service() {
 
         val schedule = viewModel.schedule.value
         if (schedule is RequestState.Success) {
-            if (schedule.data.enabled) {
+            if (false) { // schedule.data.enabled
 
                 val cal = Calendar.getInstance()
                 schedule.data.startTime = cal
