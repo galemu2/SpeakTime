@@ -3,8 +3,10 @@ package com.ctrlaccess.speaktime.background
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import com.ctrlaccess.speaktime.util.Const.ACTION_CANCEL_ALARM
+import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.convertToDate
 import com.ctrlaccess.speaktime.util.convertToTime
 import java.util.*
@@ -24,6 +26,11 @@ class SpeakTimeBroadcast : BroadcastReceiver() {
         if (ACTION_CANCEL_ALARM == intent.action) {
             val serviceIntent = Intent(context, SpeakTimeService::class.java)
             context.stopService(serviceIntent)
+
+        }
+
+        if(Intent.ACTION_BOOT_COMPLETED == intent.action){
+            Toast.makeText(context, "SpeakTime:boot completed", Toast.LENGTH_SHORT).show()
 
         }
     }

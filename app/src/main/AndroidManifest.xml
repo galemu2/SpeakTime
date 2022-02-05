@@ -26,7 +26,13 @@
         </activity>
         <receiver
             android:name=".background.SpeakTimeBroadcast"
-            android:exported="false" />
+            android:exported="false" >
+                <intent-filter>
+                    <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                    <action android:name="android.intent.action.SCREEN_ON"/>
+                    <action  android:name="com.ctrlaccess.ACTION_CANCEL_ALARM"/>
+                </intent-filter>
+        </receiver>
         <service
             android:name=".background.SpeakTimeService"
             android:exported="false">
