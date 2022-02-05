@@ -15,9 +15,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ctrlaccess.speaktime.R
+import com.ctrlaccess.speaktime.background.SpeakTimeService
 import com.ctrlaccess.speaktime.data.models.SpeakTimeSchedule
 import com.ctrlaccess.speaktime.ui.viewModels.SpeakTimeViewModel
-import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.RequestState
 import java.util.*
 
@@ -35,11 +35,7 @@ fun SpeakTimeContent(
     LaunchedEffect(key1 = requestState) {
         if (requestState is RequestState.Success) {
             schedule = updateValues(requestState = requestState, viewModel = viewModel)
-            if (schedule.enabled) {
-                Log.d("TAG", "schedule.enabled: $schedule")
-            }else{
-                Log.d("TAG", "schedule.disabled: $schedule")
-            }
+
         } else if (requestState is RequestState.Error) {
             val message = (requestState as RequestState.Error).error.message ?: "Unknown Error!"
             Toast.makeText(context, "ERROR: $message", Toast.LENGTH_SHORT).show()
@@ -56,7 +52,6 @@ fun SpeakTimeContent(
             tabIndex = tabIndex,
             schedule = schedule.copy(),
             updateCalendar = { newSchedule ->
-                Log.d(TAG, "SpeakTimeContent: updateCalendar()")
                 val today = Calendar.getInstance()
                 schedule.apply {
                     startTime.apply {
@@ -81,11 +76,10 @@ fun SpeakTimeContent(
                 }
                 viewModel.updateSchedule(schedule = schedule)
 
-
-/*            todo    SpeakTimeService.startSpeakTime(
+                SpeakTimeService.startSpeakTime(
                     context = context,
                     schedule.startTime.timeInMillis
-                )*/
+                )
 
             },
             dialogState = {
@@ -103,7 +97,7 @@ fun SpeakTimeContent(
                 id = R.drawable.ic_honeycomb
             ),
             contentScale = ContentScale.Crop,
-            contentDescription = stringResource(id = R.string.backgroun_img_honeycomb)
+            contentDescription = stringResource(id = R.string.background_img_honeycomb)
         )
         SpeakTimeItem(
             modifier = Modifier
@@ -117,8 +111,47 @@ fun SpeakTimeContent(
             updateEnabled = { isEnabled ->
                 schedule.apply {
                     enabled = isEnabled
+                    if (isEnabled) {
+
+                        val today = Calendar.getInstance()
+                        val startTime = startTime.timeInMillis
+                        val stopTime = stopTime.timeInMillis
+
+                        if (today.timeInMillis < stopTime) {
+                            if (today.timeInMillis > startTime) {
+                                SpeakTimeService.startSpeakTime(context, today.timeInMillis)
+                            } else {
+                                SpeakTimeService.startSpeakTime(context, startTime = startTime)
+                            }
+                        } else {
+
+                            this.startTime.apply {
+                                set(Calendar.YEAR, today.get(Calendar.YEAR))
+                                set(Calendar.MONTH, today.get(Calendar.MONTH))
+                                set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR).plus(1))
+
+                                set(Calendar.SECOND, 0)
+                                set(Calendar.MILLISECOND, 0)
+                            }
+
+                            this.stopTime.apply {
+                                set(Calendar.YEAR, today.get(Calendar.YEAR))
+                                set(Calendar.MONTH, today.get(Calendar.MONTH))
+                                set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR).plus(1))
+
+                                set(Calendar.SECOND, 0)
+                                set(Calendar.MILLISECOND, 0)
+                            }
+                            SpeakTimeService.startSpeakTime(context, startTime = startTime)
+
+                        }
+
+                    } else {
+                        SpeakTimeService.stopSpeakTime(context, Calendar.getInstance().timeInMillis)
+                    }
                 }
                 viewModel.updateSchedule(schedule = schedule)
+                viewModel.getSpeakTimeSchedule()
             }
         )
     }
@@ -132,7 +165,7 @@ fun SpeakTimeItem(
     enabled: Boolean,
     updateEnabled: (Boolean) -> Unit,
     schedule: SpeakTimeSchedule,
-    ) {
+) {
 
     Column(
         modifier = modifier

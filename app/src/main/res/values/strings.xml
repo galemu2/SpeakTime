@@ -17,5 +17,11 @@
     <!-- Alert Dialog buttons-->
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
-    <string name="backgroun_img_honeycomb">backgroun image hineycomb</string>
+
+
+    <string name="background_img_honeycomb">background image honeycomb</string>
+    <string name="time_gap">need 1 hour between start and stop time</string>
+
+    <string name="speak_time_stop">SpeakTime stopped</string>
+    <string name="speak_time_start">SpeakTime started</string>
 </resources>

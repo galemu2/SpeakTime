@@ -24,7 +24,7 @@ class SpeakTimeBroadcast : BroadcastReceiver() {
         if (ACTION_CANCEL_ALARM == intent.action) {
             val serviceIntent = Intent(context, SpeakTimeService::class.java)
             context.stopService(serviceIntent)
-            Toast.makeText(context, "Cancel Alarm", Toast.LENGTH_SHORT).show()
+
         }
     }
 
