@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ctrlaccess.speaktime.data.models.SpeakTimeSchedule
 import com.ctrlaccess.speaktime.data.repositories.SpeakTimeRepository
+import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.RequestState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,7 @@ class SpeakTimeViewModel @Inject constructor(private val repository: SpeakTimeRe
     private var _schedule = MutableStateFlow<RequestState<SpeakTimeSchedule>>(RequestState.Idle)
 
 
-      val initialSchedule = SpeakTimeSchedule(
+    val initialSchedule = SpeakTimeSchedule(
         startTime = Calendar.getInstance().apply {
             set(Calendar.HOUR, 10)
             set(Calendar.MINUTE, 1)
@@ -45,28 +46,32 @@ class SpeakTimeViewModel @Inject constructor(private val repository: SpeakTimeRe
     val schedule: StateFlow<RequestState<SpeakTimeSchedule>>
         get() = _schedule
 
-      fun getSpeakTimeSchedule() {
+    /* todo
+    * https://proandroiddev.com/better-handling-states-between-viewmodel-and-composable-7ca14af379cb
+    * */
+    fun getSpeakTimeSchedule() {
         _schedule.value = RequestState.Loading
-
         try {
-            viewModelScope.launch(Dispatchers.Main) {
 
+            viewModelScope.launch {
                 repository.schedule.collect {
                     _schedule.value = RequestState.Success(it)
                 }
             }
+
         } catch (e: Exception) {
             _schedule.value = RequestState.Error(e)
-            Log.d("TAG", "Error: ${e.message}")
+            Log.d(TAG, "Error: ${e.message}")
         }
 
     }
 
     fun updateSchedule(schedule: SpeakTimeSchedule) {
 
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.updateSchedule(schedule = schedule)
         }
+
     }
 
 }

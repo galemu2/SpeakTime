@@ -4,11 +4,17 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import com.ctrlaccess.speaktime.util.Const.CHANNEL_ID
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
-class SpeakTimeApp : Application() {
+class SpeakTimeApp : Application(), Configuration.Provider {
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
 
     override fun onCreate() {
         super.onCreate()
@@ -26,5 +32,9 @@ class SpeakTimeApp : Application() {
             notificationManager.createNotificationChannel(channel)
 
         }
+    }
+
+    override fun getWorkManagerConfiguration(): Configuration {
+        return Configuration.Builder().setWorkerFactory(workerFactory).build()
     }
 }

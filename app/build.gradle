@@ -77,4 +77,12 @@ dependencies {
 
     // coroutine
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
+
+
+    // WorkerManager: Kotlin + coroutines
+    implementation "androidx.work:work-runtime-ktx:$work_version"
+
+    // hilt for worker
+    implementation 'androidx.hilt:hilt-work:1.0.0'
+    kapt 'androidx.hilt:hilt-compiler:1.0.0'
 }

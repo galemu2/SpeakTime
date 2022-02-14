@@ -18,6 +18,7 @@ import com.ctrlaccess.speaktime.R
 import com.ctrlaccess.speaktime.background.SpeakTimeService
 import com.ctrlaccess.speaktime.data.models.SpeakTimeSchedule
 import com.ctrlaccess.speaktime.ui.viewModels.SpeakTimeViewModel
+import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.RequestState
 import java.util.*
 
@@ -34,12 +35,13 @@ fun SpeakTimeContent(
 
     LaunchedEffect(key1 = requestState) {
         if (requestState is RequestState.Success) {
-            schedule = updateValues(requestState = requestState, viewModel = viewModel)
+            Log.d(TAG, "SpeakTimeContent: updating ..")
+            schedule = (requestState as RequestState.Success<SpeakTimeSchedule>).data
 
         } else if (requestState is RequestState.Error) {
             val message = (requestState as RequestState.Error).error.message ?: "Unknown Error!"
             Toast.makeText(context, "ERROR: $message", Toast.LENGTH_SHORT).show()
-            Log.d("TAG", "SpeakTimeContent: RequestState.Error: $message")
+            Log.d(TAG, "SpeakTimeContent: RequestState.Error: $message")
         }
     }
 
@@ -216,18 +218,3 @@ fun SpeakTimeItem(
     }
 }
 
-private fun updateValues(
-    requestState: RequestState<SpeakTimeSchedule>,
-    viewModel: SpeakTimeViewModel
-): SpeakTimeSchedule {
-
-    return when (requestState) {
-        is RequestState.Success -> {
-            requestState.data
-        }
-        else -> {
-            viewModel.initialSchedule
-        }
-    }
-
-}

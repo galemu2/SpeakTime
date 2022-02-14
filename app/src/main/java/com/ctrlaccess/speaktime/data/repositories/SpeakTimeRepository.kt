@@ -10,8 +10,8 @@ class SpeakTimeRepository @Inject constructor(private val speakTimeDao: SpeakTim
 
     val schedule = speakTimeDao.getSchedule()
 
-    suspend fun updateSchedule(schedule: SpeakTimeSchedule){
-        speakTimeDao.updateSchedule(schedule = schedule)
+    suspend fun updateSchedule(schedule: SpeakTimeSchedule) {
+         speakTimeDao.updateSchedule(schedule = schedule)
     }
 
 }

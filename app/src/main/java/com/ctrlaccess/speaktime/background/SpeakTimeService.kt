@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.ctrlaccess.speaktime.MainActivity
@@ -15,6 +16,7 @@ import com.ctrlaccess.speaktime.R
 import com.ctrlaccess.speaktime.ui.viewModels.SpeakTimeViewModel
 import com.ctrlaccess.speaktime.util.Const
 import com.ctrlaccess.speaktime.util.Const.CHANNEL_ID
+import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.RequestState
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -25,7 +27,7 @@ class SpeakTimeService : Service() {
 
     private lateinit var speakTimeBroadcastReceiver: SpeakTimeBroadcast
     private lateinit var speakTimeStop: String
-    private lateinit var speakTimeStart:String
+    private lateinit var speakTimeStart: String
 
     @Inject
     lateinit var viewModel: SpeakTimeViewModel
@@ -94,9 +96,10 @@ class SpeakTimeService : Service() {
         contentDescription = getString(R.string.content_description)
         speakTimeBroadcastReceiver = SpeakTimeBroadcast()
 
-        speakTimeStop =  getString(R.string.speak_time_stop)
+        speakTimeStop = getString(R.string.speak_time_stop)
         speakTimeStart = getString(R.string.speak_time_start)
         val requestState = viewModel.schedule.value
+
         if (requestState is RequestState.Success) {
             val time = requestState.data.stopTime
             stopSpeakTime(this, time.timeInMillis)
@@ -106,6 +109,11 @@ class SpeakTimeService : Service() {
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
+        val action = intent?.action?: "No Action"
+        Log.d(TAG, "onStartCommand: $action")
+
+
         val notificationIntent = Intent(this, MainActivity::class.java)
         val pendingIntent: PendingIntent = PendingIntent.getActivity(
             this,
@@ -158,7 +166,6 @@ class SpeakTimeService : Service() {
                 }
 
                 viewModel.updateSchedule(schedule = requestState.data)
-                viewModel.getSpeakTimeSchedule()
             }
         }
         unregisterReceiver(speakTimeBroadcastReceiver)
