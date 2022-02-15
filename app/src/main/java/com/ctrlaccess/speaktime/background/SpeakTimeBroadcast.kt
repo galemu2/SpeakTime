@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.ctrlaccess.speaktime.background.workers.SpeakTimeWorker
 import com.ctrlaccess.speaktime.util.Const.ACTION_CANCEL_ALARM
 import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.convertToDate
@@ -48,9 +49,9 @@ class SpeakTimeBroadcast : BroadcastReceiver(), TextToSpeech.OnInitListener {
             Toast.makeText(context, "SpeakTime: Reboot", Toast.LENGTH_SHORT).show()
             Log.d(TAG, "onReceive: RequestState.Success")
 
-            val wm = WorkManager.getInstance(context)
+            val workManager = WorkManager.getInstance(context)
 
-            wm.enqueue(OneTimeWorkRequest.from(SpeakTimeWorker::class.java))
+            workManager.enqueue(OneTimeWorkRequest.from(SpeakTimeWorker::class.java))
         }
     }
 

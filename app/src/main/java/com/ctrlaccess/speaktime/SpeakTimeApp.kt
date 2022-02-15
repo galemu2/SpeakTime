@@ -20,13 +20,15 @@ class SpeakTimeApp : Application(), Configuration.Provider {
         super.onCreate()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "speakTimeNotificationChannel"
-            val description = "Channel for alarm manager"
+            val description =getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 name,
                 importance
             )
+
+            channel.description = description
 
             val notificationManager = getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(channel)

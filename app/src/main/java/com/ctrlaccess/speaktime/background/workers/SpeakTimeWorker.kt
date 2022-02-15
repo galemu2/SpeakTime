@@ -1,4 +1,4 @@
-package com.ctrlaccess.speaktime.background
+package com.ctrlaccess.speaktime.background.workers
 
 import android.content.Context
 import android.util.Log
@@ -7,7 +7,6 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.ctrlaccess.speaktime.data.models.SpeakTimeSchedule
 import com.ctrlaccess.speaktime.data.repositories.SpeakTimeRepository
-import com.ctrlaccess.speaktime.ui.viewModels.SpeakTimeViewModel
 import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.convertToDate
 import dagger.assisted.Assisted
@@ -21,18 +20,14 @@ import javax.inject.Inject
 class SpeakTimeWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted params: WorkerParameters,
-
     ) : Worker(context, params) {
-
-    @Inject
-    lateinit var viewModel: SpeakTimeViewModel
 
     @Inject
     lateinit var repository: SpeakTimeRepository
 
-
     override fun doWork(): Result {
-        val dispatcher = Dispatchers.Main
+        Log.d(TAG, "doWork: Started ...")
+        val dispatcher = Dispatchers.IO
         var schedule: SpeakTimeSchedule? = null
         return runBlocking(dispatcher) {
  
@@ -57,40 +52,6 @@ class SpeakTimeWorker @AssistedInject constructor(
         }
 
 
-        /*val requestState = viewModel.schedule.value
-
-
-        GlobalScope.launch {
-            var idel = 1
-            while (requestState is RequestState.Idle) {
-                Log.d(TAG, "doWork: RequestState.Idle: $idel")
-                delay(300)
-                idel++
-            }
-
-            var loading = 1
-            while (requestState is RequestState.Loading) {
-                Log.d(TAG, "doWork: RequestState.Loading: $loading")
-                delay(300)
-                loading++
-            }
-
-            if (requestState is RequestState.Success) {
-                val schedule = requestState.data
-                val startTime = schedule.startTime
-                val stopTime = schedule.stopTime
-                val start =
-                    convertToDate(startTime.timeInMillis) + " " + convertToTime(startTime.timeInMillis)
-                val stop =
-                    convertToDate(stopTime.timeInMillis) + " " + convertToTime(stopTime.timeInMillis)
-                Log.d(TAG, "doWork: $start")
-                Log.d(TAG, "doWork: $stop")
-            } else {
-                Log.d(TAG, "doWork: not really doing work right now $requestState")
-            }
-        }.start()
-
-*/
 
     }
 

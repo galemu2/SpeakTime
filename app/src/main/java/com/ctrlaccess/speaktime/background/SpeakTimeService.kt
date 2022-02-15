@@ -11,8 +11,8 @@ import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import com.ctrlaccess.speaktime.MainActivity
 import com.ctrlaccess.speaktime.R
+import com.ctrlaccess.speaktime.ui.MainActivity
 import com.ctrlaccess.speaktime.ui.viewModels.SpeakTimeViewModel
 import com.ctrlaccess.speaktime.util.Const
 import com.ctrlaccess.speaktime.util.Const.CHANNEL_ID
