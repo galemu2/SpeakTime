@@ -3,55 +3,52 @@ package com.ctrlaccess.speaktime.background.workers
 import android.content.Context
 import android.util.Log
 import androidx.hilt.work.HiltWorker
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.ctrlaccess.speaktime.data.models.SpeakTimeSchedule
+import androidx.work.workDataOf
 import com.ctrlaccess.speaktime.data.repositories.SpeakTimeRepository
 import com.ctrlaccess.speaktime.util.Const.TAG
-import com.ctrlaccess.speaktime.util.convertToDate
+import com.ctrlaccess.speaktime.util.Const.WORKER_START_TIME
+import com.ctrlaccess.speaktime.util.Const.WORKER_STOP_TIME
+import com.ctrlaccess.speaktime.util.convertToTime
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import java.util.*
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 @HiltWorker
 class SpeakTimeWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted params: WorkerParameters,
-    ) : Worker(context, params) {
+) : CoroutineWorker(context, params) {
 
     @Inject
     lateinit var repository: SpeakTimeRepository
 
-    override fun doWork(): Result {
-        Log.d(TAG, "doWork: Started ...")
-        val dispatcher = Dispatchers.IO
-        var schedule: SpeakTimeSchedule? = null
-        return runBlocking(dispatcher) {
- 
-            repository.schedule.collect {
-                schedule = it
-            }
+    override suspend fun doWork(): Result {
 
-            val today = Calendar.getInstance().timeInMillis
-            Log.d(
-                TAG,
-                "doWork: ${convertToDate(schedule?.stopTime?.timeInMillis ?: today)}"
+        return try {
+
+            val schedule = repository.schedule.first()
+
+            val startTime = schedule.startTime.timeInMillis
+            val stopTime = schedule.stopTime.timeInMillis
+
+            val outputData = workDataOf(
+                WORKER_STOP_TIME to stopTime,
+                WORKER_START_TIME to startTime
             )
 
-            if (schedule == null) {
-                Log.d(TAG, "doWork: Failure")
-                Result.failure()
-            }
-            else {
-                Log.d(TAG, "doWork: Success")
-                Result.success()
-            }
+            Log.d(TAG, "doWork: ${convertToTime(startTime)}")
+            Log.d(TAG, "doWork: ${convertToTime(stopTime)}")
+
+
+            Result.success(outputData)
+
+        } catch (e: Throwable) {
+            Log.d(TAG, "doWork: Result.failure: ${e.message}")
+            Result.failure()
         }
-
-
 
     }
 

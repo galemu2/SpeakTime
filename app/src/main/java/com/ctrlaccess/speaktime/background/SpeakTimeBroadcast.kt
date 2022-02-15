@@ -6,11 +6,12 @@ import android.content.Intent
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.widget.Toast
-import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.ctrlaccess.speaktime.background.workers.SpeakTimeWorker
 import com.ctrlaccess.speaktime.util.Const.ACTION_CANCEL_ALARM
 import com.ctrlaccess.speaktime.util.Const.TAG
+import com.ctrlaccess.speaktime.util.Const.WORKER_TAG
 import com.ctrlaccess.speaktime.util.convertToDate
 import com.ctrlaccess.speaktime.util.convertToTime
 import java.util.*
@@ -47,11 +48,20 @@ class SpeakTimeBroadcast : BroadcastReceiver(), TextToSpeech.OnInitListener {
         if (Intent.ACTION_BOOT_COMPLETED == intent.action) {
 
             Toast.makeText(context, "SpeakTime: Reboot", Toast.LENGTH_SHORT).show()
-            Log.d(TAG, "onReceive: RequestState.Success")
+            Log.d(TAG, "onReceive: SpeakTime: Reboot")
+
+            val work = OneTimeWorkRequestBuilder<SpeakTimeWorker>()
+                .addTag(WORKER_TAG).build()
 
             val workManager = WorkManager.getInstance(context)
 
-            workManager.enqueue(OneTimeWorkRequest.from(SpeakTimeWorker::class.java))
+            workManager.enqueue(work)
+
+            workManager.getWorkInfosByTagLiveData(WORKER_TAG).observeForever {
+                for (i in it) {
+                    Log.d(TAG, "onReceive: ${i.outputData.keyValueMap}")
+                }
+            }
         }
     }
 
