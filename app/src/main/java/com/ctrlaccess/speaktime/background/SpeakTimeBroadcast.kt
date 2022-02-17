@@ -6,10 +6,14 @@ import android.content.Intent
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.widget.Toast
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.ctrlaccess.speaktime.background.workers.SpeakTimeRestoreWorker
 import com.ctrlaccess.speaktime.background.workers.SpeakTimeWorker
 import com.ctrlaccess.speaktime.util.Const.ACTION_CANCEL_ALARM
+import com.ctrlaccess.speaktime.util.Const.SPEAK_TIME_WORK_NAME
 import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.Const.WORKER_TAG
 import com.ctrlaccess.speaktime.util.convertToDate
@@ -50,12 +54,23 @@ class SpeakTimeBroadcast : BroadcastReceiver(), TextToSpeech.OnInitListener {
             Toast.makeText(context, "SpeakTime: Reboot", Toast.LENGTH_SHORT).show()
             Log.d(TAG, "onReceive: SpeakTime: Reboot")
 
+            val workManager = WorkManager.getInstance(context)
+
             val work = OneTimeWorkRequestBuilder<SpeakTimeWorker>()
                 .addTag(WORKER_TAG).build()
 
-            val workManager = WorkManager.getInstance(context)
+            val restorWork = OneTimeWorkRequest.Builder(SpeakTimeRestoreWorker::class.java)
+                .addTag(WORKER_TAG).build()
 
-            workManager.enqueue(work)
+            var continuation = workManager.beginUniqueWork(
+                SPEAK_TIME_WORK_NAME,
+                ExistingWorkPolicy.REPLACE,
+                work
+            )
+
+
+            continuation = continuation.then(restorWork)
+            continuation.enqueue()
 
             workManager.getWorkInfosByTagLiveData(WORKER_TAG).observeForever {
                 for (i in it) {

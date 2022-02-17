@@ -3,6 +3,7 @@ package com.ctrlaccess.speaktime.util
 object Const {
 
     const val WORKER_TAG: String = "WORKER TAG"
+    const val SPEAK_TIME_WORK_NAME: String = "SPEAK TIME-WORK NamE"
 
     const val WORKER_START_TIME = "WORKER-START-TIME"
     const val WORKER_STOP_TIME = "WORKER-STOP-TIME"

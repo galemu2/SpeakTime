@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.ctrlaccess.speaktime.R
 import com.ctrlaccess.speaktime.ui.MainActivity
@@ -34,23 +35,27 @@ class SpeakTimeService : Service() {
 
     companion object {
 
+
         fun startSpeakTime(context: Context, startTime: Long) {
             val startIntent = Intent(context, SpeakTimeService::class.java)
             val alarmManager: AlarmManager =
                 context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val startPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
                 PendingIntent.getForegroundService(
                     context,
                     0,
                     startIntent,
-                    0
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE
+                    else 0
                 )
             } else {
                 PendingIntent.getService(
                     context,
                     0,
                     startIntent,
-                    0
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE
+                    else 0
                 )
             }
 
@@ -72,7 +77,8 @@ class SpeakTimeService : Service() {
                 context,
                 0,
                 intent,
-                0
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE
+                else 0
             )
 
             alarmManager.setExact(
@@ -110,16 +116,13 @@ class SpeakTimeService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        val action = intent?.action?: "No Action"
-        Log.d(TAG, "onStartCommand: $action")
-
-
         val notificationIntent = Intent(this, MainActivity::class.java)
         val pendingIntent: PendingIntent = PendingIntent.getActivity(
             this,
             0,
             notificationIntent,
-            0
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE
+            else 0
         )
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)

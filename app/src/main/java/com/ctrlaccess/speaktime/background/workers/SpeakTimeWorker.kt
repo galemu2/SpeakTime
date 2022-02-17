@@ -42,7 +42,6 @@ class SpeakTimeWorker @AssistedInject constructor(
             Log.d(TAG, "doWork: ${convertToTime(startTime)}")
             Log.d(TAG, "doWork: ${convertToTime(stopTime)}")
 
-
             Result.success(outputData)
 
         } catch (e: Throwable) {

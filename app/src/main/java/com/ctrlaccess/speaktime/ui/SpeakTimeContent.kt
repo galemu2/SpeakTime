@@ -20,6 +20,9 @@ import com.ctrlaccess.speaktime.data.models.SpeakTimeSchedule
 import com.ctrlaccess.speaktime.ui.viewModels.SpeakTimeViewModel
 import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.RequestState
+import com.ctrlaccess.speaktime.util.convertToDate
+import com.ctrlaccess.speaktime.util.convertToDateAndTime
+import com.ctrlaccess.speaktime.util.convertToTime
 import java.util.*
 
 @Composable
@@ -37,6 +40,8 @@ fun SpeakTimeContent(
         if (requestState is RequestState.Success) {
             Log.d(TAG, "SpeakTimeContent: updating ..")
             schedule = (requestState as RequestState.Success<SpeakTimeSchedule>).data
+            Log.d(TAG, "StartTime: ${convertToDateAndTime(schedule.startTime.timeInMillis)}")
+            Log.d(TAG, "StopTime: ${convertToDateAndTime(schedule.stopTime.timeInMillis)}")
 
         } else if (requestState is RequestState.Error) {
             val message = (requestState as RequestState.Error).error.message ?: "Unknown Error!"
