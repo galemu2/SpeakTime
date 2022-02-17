@@ -29,11 +29,15 @@ fun DisplayCustomDialog(
     tabIndex: Int,
 ) {
 
+    val now = Calendar.getInstance()
+
     var startTime by mutableStateOf(schedule.startTime)
     var stopTime by mutableStateOf(schedule.stopTime)
 
     val context = LocalContext.current
-    val time_gap = stringResource(id = R.string.time_gap)
+    val timeGap = stringResource(id = R.string.time_gap)
+
+    val startTimeEarly = stringResource(id = R.string.time_start)
     AlertDialog(
         modifier = Modifier.wrapContentSize(),
         onDismissRequest = {
@@ -51,18 +55,25 @@ fun DisplayCustomDialog(
         },
         confirmButton = {
             Button(onClick = {
-                // at least 1 hour between start and end
-                val gap = stopTime.timeInMillis - startTime.timeInMillis
-                if(gap >= HOUR){
-                    schedule.apply {
-                        this.startTime = startTime
-                        this.stopTime = stopTime
+                // start time is latter than now
+                if (startTime.timeInMillis > now.timeInMillis) {
+
+                    // at least 1 hour between start and end time
+                    val gap = stopTime.timeInMillis - startTime.timeInMillis
+                    if (gap > HOUR) {
+                        schedule.apply {
+                            this.startTime = startTime
+                            this.stopTime = stopTime
+                        }
+                        updateCalendar(schedule)
+                        dialogState(false)
+                    } else {
+                        Toast.makeText(context, timeGap, Toast.LENGTH_SHORT).show()
                     }
-                    updateCalendar(schedule)
-                    dialogState(false)
-                }else {
-                    Toast.makeText(context, time_gap, Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, startTimeEarly, Toast.LENGTH_SHORT).show()
                 }
+
 
             }) {
                 Text(text = stringResource(id = R.string.ok))
@@ -94,7 +105,6 @@ fun CustomDialog(
     var selectedTabIndex by remember { mutableStateOf(tabIndex) }
 
 
-
     val start = stringResource(id = R.string.start_time)
     val end = stringResource(id = R.string.end_time)
     val tabs = listOf(start, end)
@@ -119,7 +129,7 @@ fun CustomDialog(
             0 -> {
                 TimePickerView(
                     modifier = modifier,
-                    calendar = schedule.startTime,
+                    cal = schedule.startTime,
                 ) { startTimeCal ->
                     startTimeCalendar = startTimeCal
                 }
@@ -128,7 +138,7 @@ fun CustomDialog(
             1 -> {
                 TimePickerView(
                     modifier = modifier,
-                    calendar = schedule.stopTime,
+                    cal = schedule.stopTime,
                 ) { stopTimeCal ->
                     stopTimeCalendar = stopTimeCal
                 }
@@ -142,16 +152,30 @@ fun CustomDialog(
 @Composable
 private fun TimePickerView(
     modifier: Modifier = Modifier,
-    calendar: Calendar,
+    cal: Calendar,
     updateCalendar: (Calendar) -> Unit,
 ) {
+
+    val today = Calendar.getInstance()
+
+    val calendar by remember {
+        mutableStateOf(cal.apply {
+            set(Calendar.YEAR, today.get(Calendar.YEAR))
+            set(Calendar.MONTH, today.get(Calendar.MONTH))
+            set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR))
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        })
+    }
 
     AndroidView(
         modifier = modifier,
         factory = { context ->
             TimePicker(context).apply {
                 setIs24HourView(false)
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
                     hour = calendar.get(Calendar.HOUR_OF_DAY)
                     minute = calendar.get(Calendar.MINUTE)
 

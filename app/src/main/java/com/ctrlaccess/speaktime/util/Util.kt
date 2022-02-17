@@ -17,5 +17,9 @@ fun convertToDate(time: Long): String {
 }
 
 fun convertToDateAndTime(time: Long): String {
-    return ">> Date: ${convertToDate(time = time)} |>> Time: ${convertToTime(time = time)}"
+    return "|>> Date: ${convertToDate(time = time)} |>> Time: ${convertToTime(time = time)}"
+}
+
+fun compareScheduleTime(time1: Long, time2: Long): Boolean {
+    return time1 > time2
 }

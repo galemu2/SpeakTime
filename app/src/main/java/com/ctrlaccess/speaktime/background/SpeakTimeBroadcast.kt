@@ -59,7 +59,7 @@ class SpeakTimeBroadcast : BroadcastReceiver(), TextToSpeech.OnInitListener {
             val work = OneTimeWorkRequestBuilder<SpeakTimeWorker>()
                 .addTag(WORKER_TAG).build()
 
-            val restorWork = OneTimeWorkRequest.Builder(SpeakTimeRestoreWorker::class.java)
+            val restoreWork = OneTimeWorkRequest.Builder(SpeakTimeRestoreWorker::class.java)
                 .addTag(WORKER_TAG).build()
 
             var continuation = workManager.beginUniqueWork(
@@ -69,12 +69,13 @@ class SpeakTimeBroadcast : BroadcastReceiver(), TextToSpeech.OnInitListener {
             )
 
 
-            continuation = continuation.then(restorWork)
+            continuation = continuation.then(restoreWork)
             continuation.enqueue()
 
             workManager.getWorkInfosByTagLiveData(WORKER_TAG).observeForever {
                 for (i in it) {
                     Log.d(TAG, "onReceive: ${i.outputData.keyValueMap}")
+                    Log.d(TAG, "onReceive: ${i.state}")
                 }
             }
         }

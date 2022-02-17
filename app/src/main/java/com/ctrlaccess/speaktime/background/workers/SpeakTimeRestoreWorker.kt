@@ -9,6 +9,7 @@ import com.ctrlaccess.speaktime.background.SpeakTimeService
 import com.ctrlaccess.speaktime.data.repositories.SpeakTimeRepository
 import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.Const.WORKER_START_TIME
+import com.ctrlaccess.speaktime.util.convertToDateAndTime
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -33,7 +34,7 @@ class SpeakTimeRestoreWorker @AssistedInject constructor(
         }
 
         val today = Calendar.getInstance()
-
+        Log.d(TAG, "SpeakTimeRestoreWorker: ${convertToDateAndTime(today.timeInMillis)}")
         return try {
             Log.d(TAG, "SpeakTimeRestoreWorker: started try block")
             val schedule = repository.schedule.first()

@@ -59,27 +59,10 @@ fun SpeakTimeContent(
             tabIndex = tabIndex,
             schedule = schedule.copy(),
             updateCalendar = { newSchedule ->
-                val today = Calendar.getInstance()
-                schedule.apply {
-                    startTime.apply {
-                        set(Calendar.YEAR, today.get(Calendar.YEAR))
-                        set(Calendar.MONTH, today.get(Calendar.MONTH))
-                        set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR))
-                        set(Calendar.HOUR, newSchedule.startTime.get(Calendar.HOUR))
-                        set(Calendar.MINUTE, newSchedule.startTime.get(Calendar.MINUTE))
-                        set(Calendar.SECOND, 0)
-                        set(Calendar.MILLISECOND, 0)
-                    }
 
-                    stopTime.apply {
-                        set(Calendar.YEAR, today.get(Calendar.YEAR))
-                        set(Calendar.MONTH, today.get(Calendar.MONTH))
-                        set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR))
-                        set(Calendar.HOUR, newSchedule.stopTime.get(Calendar.HOUR))
-                        set(Calendar.MINUTE, newSchedule.stopTime.get(Calendar.MINUTE))
-                        set(Calendar.SECOND, 0)
-                        set(Calendar.MILLISECOND, 0)
-                    }
+                schedule.apply {
+                    startTime = newSchedule.startTime
+                    stopTime = newSchedule.stopTime
                 }
                 viewModel.updateSchedule(schedule = schedule)
 
