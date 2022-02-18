@@ -7,9 +7,8 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.ctrlaccess.speaktime.background.SpeakTimeService
 import com.ctrlaccess.speaktime.data.repositories.SpeakTimeRepository
-import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.Const.WORKER_START_TIME
-import com.ctrlaccess.speaktime.util.convertToDateAndTime
+import com.ctrlaccess.speaktime.util.Const.WORKER_STOP_TIME
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -28,15 +27,20 @@ class SpeakTimeRestoreWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         val appContext = applicationContext
         val startTime = inputData.getLong(WORKER_START_TIME, -1L)
-        val stopTime = inputData.getLong(WORKER_START_TIME, -1L)
+        val stopTime = inputData.getLong(WORKER_STOP_TIME, -1L)
         if (startTime == -1L || stopTime == -1L) {
             return Result.failure()
         }
 
         val today = Calendar.getInstance()
-        Log.d(TAG, "SpeakTimeRestoreWorker: ${convertToDateAndTime(today.timeInMillis)}")
+        val startTimeCalendar = Calendar.getInstance().apply {
+            timeInMillis = startTime
+        }
+
+        val stopTimeCalendar = Calendar.getInstance().apply {
+            timeInMillis = stopTime
+        }
         return try {
-            Log.d(TAG, "SpeakTimeRestoreWorker: started try block")
             val schedule = repository.schedule.first()
 
             if (startTime > today.timeInMillis) {
@@ -50,20 +54,28 @@ class SpeakTimeRestoreWorker @AssistedInject constructor(
             } else {
 
                 val startCalendar = Calendar.getInstance().apply {
-                    timeInMillis = startTime
                     set(Calendar.YEAR, today.get(Calendar.YEAR))
                     set(Calendar.MONTH, today.get(Calendar.MONTH))
                     set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR))
+                    set(Calendar.HOUR, startTimeCalendar.get(Calendar.HOUR))
+                    set(Calendar.MINUTE, startTimeCalendar.get(Calendar.MINUTE))
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
                 }
 
                 val stopCalendar = Calendar.getInstance().apply {
-                    timeInMillis = stopTime
                     set(Calendar.YEAR, today.get(Calendar.YEAR))
                     set(Calendar.MONTH, today.get(Calendar.MONTH))
                     set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR))
+                    set(Calendar.HOUR, stopTimeCalendar.get(Calendar.HOUR))
+                    set(Calendar.MINUTE, stopTimeCalendar.get(Calendar.MINUTE))
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
                 }
 
-                if (startCalendar.timeInMillis > today.timeInMillis) {
+                if ((startCalendar.timeInMillis > today.timeInMillis)
+                    or (today.timeInMillis in startCalendar.timeInMillis until stopCalendar.timeInMillis)
+                ) {
                     // just update database and return success
 
                     schedule.apply {
@@ -74,30 +86,13 @@ class SpeakTimeRestoreWorker @AssistedInject constructor(
                     SpeakTimeService.startSpeakTime(appContext, startCalendar.timeInMillis)
                     return Result.success()
 
-                } else if (today.timeInMillis in startCalendar.timeInMillis until stopCalendar.timeInMillis) {
-
-                    schedule.apply {
-                        this.startTime = startCalendar
-                        this.stopTime = stopCalendar
-                    }
-                    repository.updateSchedule(schedule = schedule)
-
-                    SpeakTimeService.startSpeakTime(appContext, today.timeInMillis)
-                    return Result.success()
                 } else {
-                    val newStartCal = Calendar.getInstance().apply {
-                        set(Calendar.DAY_OF_YEAR, startCalendar.get(Calendar.DAY_OF_YEAR).plus(1))
-                        set(Calendar.HOUR, startCalendar.get(Calendar.HOUR))
-                        set(Calendar.MINUTE, startCalendar.get(Calendar.MINUTE))
-                        set(Calendar.SECOND, 0)
-                        set(Calendar.MILLISECOND, 0)
+
+                    val newStartCal = startCalendar.apply {
+                        set(Calendar.DAY_OF_YEAR, this.get(Calendar.DAY_OF_YEAR).plus(1))
                     }
-                    val newStopCal = Calendar.getInstance().apply {
-                        set(Calendar.DAY_OF_YEAR, stopCalendar.get(Calendar.DAY_OF_YEAR).plus(1))
-                        set(Calendar.HOUR, stopCalendar.get(Calendar.HOUR))
-                        set(Calendar.MINUTE, stopCalendar.get(Calendar.MINUTE))
-                        set(Calendar.SECOND, 0)
-                        set(Calendar.MILLISECOND, 0)
+                    val newStopCal = stopCalendar.apply {
+                        set(Calendar.DAY_OF_YEAR, this.get(Calendar.DAY_OF_YEAR).plus(1))
                     }
 
                     schedule.apply {
@@ -113,7 +108,7 @@ class SpeakTimeRestoreWorker @AssistedInject constructor(
 
             }
         } catch (e: Throwable) {
-            Log.d(TAG, "SpeakTimeRestoreWorker: ${e.message}")
+            Log.e("SpeakTimeRestoreWorker", "SpeakTimeRestoreWorker: ${e.message}")
             Result.failure()
         }
 

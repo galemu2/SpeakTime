@@ -20,9 +20,7 @@ import com.ctrlaccess.speaktime.data.models.SpeakTimeSchedule
 import com.ctrlaccess.speaktime.ui.viewModels.SpeakTimeViewModel
 import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.RequestState
-import com.ctrlaccess.speaktime.util.convertToDate
 import com.ctrlaccess.speaktime.util.convertToDateAndTime
-import com.ctrlaccess.speaktime.util.convertToTime
 import java.util.*
 
 @Composable

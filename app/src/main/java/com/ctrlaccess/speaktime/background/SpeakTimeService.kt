@@ -8,16 +8,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.ctrlaccess.speaktime.R
 import com.ctrlaccess.speaktime.ui.MainActivity
 import com.ctrlaccess.speaktime.ui.viewModels.SpeakTimeViewModel
 import com.ctrlaccess.speaktime.util.Const
 import com.ctrlaccess.speaktime.util.Const.CHANNEL_ID
-import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.RequestState
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
