@@ -1,6 +1,8 @@
 package com.ctrlaccess.speaktime.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.IntentFilter
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,9 +23,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ctrlaccess.speaktime.R
+import com.ctrlaccess.speaktime.background.SpeakTimeBroadcast
 import com.ctrlaccess.speaktime.ui.theme.*
+import com.ctrlaccess.speaktime.util.Const
+import com.ctrlaccess.speaktime.util.Const.ACTION_TRIGGER_SPEAK_TIME
 import com.ctrlaccess.speaktime.util.convertToTime
 import java.util.*
 
@@ -185,36 +192,54 @@ fun StopTime(
     }
 }
 
-
+@Preview(showBackground = true)
 @Composable
 fun SpeakTimeToolbar() {
     val context = LocalContext.current
+
     TopAppBar(
+        navigationIcon = {
+            Icon(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .clickable {
+                        LocalBroadcastManager
+                            .getInstance(context)
+                            .registerReceiver(
+                                SpeakTimeBroadcast(),
+                                IntentFilter(ACTION_TRIGGER_SPEAK_TIME)
+                            )
+                        /// ACTION_TRIGGER_SPEAK_TIME
+                        val intent = Intent(ACTION_TRIGGER_SPEAK_TIME)
+                        LocalBroadcastManager
+                            .getInstance(context)
+                            .sendBroadcast(intent)
+
+                        LocalBroadcastManager
+                            .getInstance(context)
+                            .unregisterReceiver(
+                                SpeakTimeBroadcast()
+                            )
+
+                    },
+                painter = painterResource(id = R.drawable.ic_watch),
+                contentDescription = stringResource(
+                    id = R.string.app_icon
+                )
+            )
+        },
         modifier = Modifier
             .wrapContentSize(),
-        elevation = 4.dp,
-    ) {
-        Icon(
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .clickable {
-                    Toast
-                        .makeText(context, "Icon Clicked", Toast.LENGTH_SHORT)
-                        .show()
-                },
-            painter = painterResource(id = R.drawable.ic_watch),
-            contentDescription = stringResource(
-                id = R.string.app_icon
+        title = {
+            Text(
+                modifier = Modifier
+                    .padding(start = 16.dp),
+                text = stringResource(id = R.string.app_name),
+                color = Color.LightGray,
+                fontFamily = font2,
+                textAlign = TextAlign.Center
             )
-        )
-        Text(
-            modifier = Modifier
-                .align(CenterVertically)
-                .padding(start = 16.dp),
-            text = stringResource(id = R.string.app_name),
-            color = Color.LightGray,
-            fontFamily = font2,
-            textAlign = TextAlign.Center
-        )
-    }
+        }
+
+    )
 }

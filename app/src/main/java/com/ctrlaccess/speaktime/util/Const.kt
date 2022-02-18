@@ -11,6 +11,7 @@ object Const {
     const val CHANNEL_ID = "speakTime channel ID"
 
     const val ACTION_CANCEL_ALARM = "com.ctrlaccess.ACTION_CANCEL_ALARM"
+    const val ACTION_TRIGGER_SPEAK_TIME = "com.ctrlaccess.ACTION_TRIGGER_SPEAK_TIME"
 
     const val table = "schedule"
 

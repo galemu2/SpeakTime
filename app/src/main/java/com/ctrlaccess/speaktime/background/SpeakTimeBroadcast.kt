@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import android.widget.Toast
 import androidx.work.ExistingWorkPolicy
@@ -13,6 +14,7 @@ import androidx.work.WorkManager
 import com.ctrlaccess.speaktime.background.workers.SpeakTimeRestoreWorker
 import com.ctrlaccess.speaktime.background.workers.SpeakTimeWorker
 import com.ctrlaccess.speaktime.util.Const.ACTION_CANCEL_ALARM
+import com.ctrlaccess.speaktime.util.Const.ACTION_TRIGGER_SPEAK_TIME
 import com.ctrlaccess.speaktime.util.Const.SPEAK_TIME_WORK_NAME
 import com.ctrlaccess.speaktime.util.Const.TAG
 import com.ctrlaccess.speaktime.util.Const.WORKER_TAG
@@ -23,20 +25,46 @@ import java.util.*
 class SpeakTimeBroadcast : BroadcastReceiver(), TextToSpeech.OnInitListener {
 
     private var tts: TextToSpeech? = null
-    private var date = convertToDate(Calendar.getInstance().timeInMillis)
-    private var time = convertToTime(Calendar.getInstance().timeInMillis)
+    private var date: String? = null
+    private var time: String? = null
 
 
     override fun onReceive(context: Context, intent: Intent) {
 
-        if (Intent.ACTION_SCREEN_ON == intent.action) {
+        Toast.makeText(context, "inside broadcast", Toast.LENGTH_SHORT).show()
+        if (intent.action == ACTION_TRIGGER_SPEAK_TIME) {
+            val cal = Calendar.getInstance()
+            date = convertToDate(cal.timeInMillis)
+            time = convertToTime(cal.timeInMillis)
+
+            Toast.makeText(context, "started broadcast", Toast.LENGTH_SHORT).show()
+            tts = tts ?: TextToSpeech(context, this).apply {
+                language = Locale.getDefault()
+                setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+
+                    override fun onStart(p0: String?) {
+                    }
+
+                    override fun onDone(p0: String?) {
+                        removeTts()
+                    }
+
+                    override fun onError(p0: String?) {
+                    }
+
+                })
+            }
+        }
+
+
+        if ((Intent.ACTION_SCREEN_ON == intent.action)) {
 
             val cal = Calendar.getInstance()
             date = convertToDate(cal.timeInMillis)
             time = convertToTime(cal.timeInMillis)
             Toast.makeText(context, "$date\n$time", Toast.LENGTH_SHORT).show()
 
-            tts = TextToSpeech(context, this).apply {
+            tts = tts ?: TextToSpeech(context, this).apply {
                 language = Locale.getDefault()
             }
         }
@@ -44,9 +72,7 @@ class SpeakTimeBroadcast : BroadcastReceiver(), TextToSpeech.OnInitListener {
         if (ACTION_CANCEL_ALARM == intent.action) {
             val serviceIntent = Intent(context, SpeakTimeService::class.java)
             context.stopService(serviceIntent)
-            tts?.stop()
-            tts?.shutdown()
-            tts = null
+            removeTts()
         }
 
         if (Intent.ACTION_BOOT_COMPLETED == intent.action) {
@@ -80,9 +106,19 @@ class SpeakTimeBroadcast : BroadcastReceiver(), TextToSpeech.OnInitListener {
         }
     }
 
+    private fun removeTts() {
+        tts?.stop()
+        tts?.shutdown()
+        tts = null
+    }
+
     override fun onInit(status: Int) {
+
         if (status == TextToSpeech.SUCCESS) {
             tts?.speak("$date \n$time", TextToSpeech.QUEUE_FLUSH, null, date)
         }
     }
+
+
 }
+

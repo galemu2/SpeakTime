@@ -27,4 +27,5 @@
     <string name="speak_time_stop">SpeakTime stopped</string>
     <string name="speak_time_start">SpeakTime started</string>
     <string name="channel_description">Channel for alarm manager</string>
+
 </resources>
