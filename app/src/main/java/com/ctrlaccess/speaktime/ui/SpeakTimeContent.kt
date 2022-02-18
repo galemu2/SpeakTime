@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -160,12 +161,24 @@ fun SpeakTimeItem(
             .padding(8.dp)
             .fillMaxSize()
     ) {
+
+        Surface(
+
+            color = Color.Transparent,
+            modifier = Modifier
+                .weight(2f)
+                .padding(32.dp)
+        ) {
+            SpeakTimeTextClock()
+        }
+
+
         Surface(
             color = Color.Transparent,
             modifier = Modifier
                 .background(color = Color.Transparent)
                 .fillMaxSize()
-                .weight(8f)
+                .weight(5f)
 
         ) {
             Column(
@@ -195,7 +208,7 @@ fun SpeakTimeItem(
         Surface(
             modifier = Modifier
                 .wrapContentSize()
-                .weight(2f)
+                .weight(3f)
         ) {
 
             CancelSpeakTime(enabled = enabled, updateEnabled = updateEnabled)

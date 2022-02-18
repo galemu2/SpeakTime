@@ -23,6 +23,9 @@ val backgroundColor: Color
     @Composable
     get() = if (isSystemInDarkTheme()) Color.DarkGray else Color.White
 
+val backgroundColor1: Color
+    @Composable
+    get() = if (isSystemInDarkTheme()) Color2 else Color.White
 
 val textColor1: Color
     @Composable

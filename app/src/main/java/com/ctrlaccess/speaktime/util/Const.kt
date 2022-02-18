@@ -18,5 +18,6 @@ object Const {
 
     const val HOUR = 3600000
 
+    const val CLOCK_TEXT_SIZE = 35f
 
 }

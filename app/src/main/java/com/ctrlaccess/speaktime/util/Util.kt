@@ -3,9 +3,12 @@ package com.ctrlaccess.speaktime.util
 import java.text.SimpleDateFormat
 import java.util.*
 
+const val timeFormat = "h:mm a"
+const val timeFormat1 = "h.mm.ss a"
+const val dateFormat = "EEEE LLLL d"
 
-var timeFormatter = SimpleDateFormat("h:mm a", Locale.getDefault())
-var dateFormatter = SimpleDateFormat("EEEE LLLL d", Locale.getDefault())
+var timeFormatter = SimpleDateFormat(timeFormat, Locale.getDefault())
+var dateFormatter = SimpleDateFormat(dateFormat, Locale.getDefault())
 
 /// pattern : "EEE LLL dd, yyyy"
 fun convertToTime(time: Long): String {

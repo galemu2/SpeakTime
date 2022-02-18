@@ -68,7 +68,6 @@ class SpeakTimeBroadcast : BroadcastReceiver(), TextToSpeech.OnInitListener {
                 work
             )
 
-
             continuation = continuation.then(restoreWork)
             continuation.enqueue()
 
