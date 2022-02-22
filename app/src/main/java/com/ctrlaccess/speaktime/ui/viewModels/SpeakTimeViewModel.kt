@@ -25,14 +25,15 @@ class SpeakTimeViewModel @Inject constructor(private val repository: SpeakTimeRe
     val initialSchedule = SpeakTimeSchedule(
         startTime = Calendar.getInstance().apply {
             set(Calendar.HOUR, 10)
-            set(Calendar.MINUTE, 1)
+            set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
             set(Calendar.AM_PM, Calendar.PM)
         },
         stopTime = Calendar.getInstance().apply {
-            set(Calendar.HOUR, 7)
-            set(Calendar.MINUTE, 1)
+            set(Calendar.DAY_OF_YEAR, this.get(Calendar.DAY_OF_YEAR).plus(1))
+            set(Calendar.HOUR, 6)
+            set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
             set(Calendar.AM_PM, Calendar.AM)

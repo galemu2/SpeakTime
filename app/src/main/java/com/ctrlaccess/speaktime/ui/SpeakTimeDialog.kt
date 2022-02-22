@@ -99,6 +99,7 @@ fun CustomDialog(
     schedule: SpeakTimeSchedule
 ) {
 
+    // todo BUG: end time should be next day
     var startTimeCalendar by remember { mutableStateOf(schedule.copy().startTime) }
     var stopTimeCalendar by remember { mutableStateOf(schedule.copy().stopTime) }
 

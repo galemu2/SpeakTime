@@ -10,10 +10,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,13 +22,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ctrlaccess.speaktime.R
 import com.ctrlaccess.speaktime.background.SpeakTimeBroadcast
 import com.ctrlaccess.speaktime.ui.theme.*
-import com.ctrlaccess.speaktime.util.Const
+import com.ctrlaccess.speaktime.ui.viewModels.SpeakTimeViewModel
 import com.ctrlaccess.speaktime.util.Const.ACTION_TRIGGER_SPEAK_TIME
 import com.ctrlaccess.speaktime.util.convertToTime
 import java.util.*
@@ -192,11 +190,15 @@ fun StopTime(
     }
 }
 
-@Preview(showBackground = true)
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SpeakTimeToolbar() {
+fun SpeakTimeToolbar(viewModel: SpeakTimeViewModel) {
     val context = LocalContext.current
 
+    var expanded by remember { mutableStateOf(false) }
+
+    val defaultTimeSet = stringResource(id = R.string.default_time)
     TopAppBar(
         navigationIcon = {
             Icon(
@@ -209,7 +211,7 @@ fun SpeakTimeToolbar() {
                                 SpeakTimeBroadcast(),
                                 IntentFilter(ACTION_TRIGGER_SPEAK_TIME)
                             )
-                        /// ACTION_TRIGGER_SPEAK_TIME
+
                         val intent = Intent(ACTION_TRIGGER_SPEAK_TIME)
                         LocalBroadcastManager
                             .getInstance(context)
@@ -239,6 +241,42 @@ fun SpeakTimeToolbar() {
                 fontFamily = font2,
                 textAlign = TextAlign.Center
             )
+        },
+        actions = {
+            IconButton(onClick = {
+                expanded = true
+
+            }) {
+                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "")
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = {
+                        expanded = false
+                    },
+                    content = {
+                        Surface(
+                            onClick = {
+                                viewModel.updateSchedule(viewModel.initialSchedule)
+                                viewModel.getSpeakTimeSchedule()
+                                // todo add default time here
+                                Toast.makeText(context, defaultTimeSet, Toast.LENGTH_SHORT).show()
+                                expanded = false
+                            },
+                            modifier = Modifier
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(start = 8.dp, end = 8.dp),
+                                text = "set default",
+                                style = Typography.subtitle2
+                            )
+                        }
+                    })
+
+
+            }
+
         }
 
     )

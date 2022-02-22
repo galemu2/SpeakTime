@@ -11,7 +11,7 @@ fun SpeakTimeScreen(
 ) {
 
     Scaffold(
-        topBar = { SpeakTimeToolbar() },
+        topBar = { SpeakTimeToolbar(viewModel = viewModel) },
         content = {
             SpeakTimeContent(
                 viewModel = viewModel,
