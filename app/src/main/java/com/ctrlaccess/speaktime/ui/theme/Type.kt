@@ -33,3 +33,7 @@ val Typography = Typography(
 val font2 = FontFamily(
     Font(R.font.fredoka_one_regular, weight = FontWeight.W900)
 )
+
+val font3 = FontFamily(
+    Font(R.font.righteous_regular, weight = FontWeight.W900)
+)

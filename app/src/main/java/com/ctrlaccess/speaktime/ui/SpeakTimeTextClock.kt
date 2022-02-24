@@ -4,6 +4,7 @@ import android.view.Gravity
 import android.widget.TextClock
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -16,8 +17,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.res.ResourcesCompat
+import com.ctrlaccess.speaktime.R
 import com.ctrlaccess.speaktime.ui.theme.backgroundColor1
 import com.ctrlaccess.speaktime.ui.theme.borderColor
+import com.ctrlaccess.speaktime.ui.theme.textClockColor
 import com.ctrlaccess.speaktime.util.Const.CLOCK_TEXT_SIZE
 import com.ctrlaccess.speaktime.util.timeFormat1
 
@@ -34,22 +38,40 @@ fun SpeakTimeTextClock(modifier: Modifier = Modifier) {
             .padding(8.dp)
     ) {
 
+        val textColor = textClockColor
+        Row {
+            AndroidView(
+                factory = { context ->
+                    TextClock(context).apply {
+                        this.format12Hour = timeFormat1
+                        this.gravity = Gravity.CENTER
+                        this.textSize = CLOCK_TEXT_SIZE
+                        this.setTextColor(textColor)
+                        typeface = ResourcesCompat.getFont(context, R.font.righteous_regular)
 
-        AndroidView(
-            factory = { context ->
-                TextClock(context).apply {
-                    this.format12Hour = timeFormat1
-                    this.gravity = Gravity.CENTER
-                    this.textSize = CLOCK_TEXT_SIZE
-                }
-            },
-            modifier = modifier
-                .fillMaxWidth()
-                .wrapContentHeight(align = Alignment.CenterVertically)
-                .background(color = backgroundColor1)
+                    }
+                },
+                modifier = modifier
+                    .weight(1f)
+                    .padding(end = 4.dp)
+                    .wrapContentHeight(align = Alignment.CenterVertically)
+                    .background(color = backgroundColor1)
 
 
-        )
+            )
+/*
+            Text(
+                text = "AM",
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 4.dp)
+                    .background(Color.Transparent)
+                    .wrapContentHeight(align = Alignment.CenterVertically),
+                color = textClockColor1,
+                fontFamily = font3
+            )*/
+        }
+
     }
 }
 

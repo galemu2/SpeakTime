@@ -8,6 +8,8 @@
         <entry key="../../../../../../layout/compose-model-1645200440596.xml" value="0.6094032549728752" />
         <entry key="../../../../../../layout/compose-model-1645203413730.xml" value="0.3972222222222222" />
         <entry key="../../../../../../layout/compose-model-1645204178170.xml" value="0.27870370370370373" />
+        <entry key="../../../../../../layout/compose-model-1645725748302.xml" value="0.1" />
+        <entry key="../../../../../../layout/compose-model-1645726765834.xml" value="0.19722222222222222" />
         <entry key="app/src/main/res/drawable/ic_computer.xml" value="0.1175925925925926" />
         <entry key="app/src/main/res/drawable/ic_finger.xml" value="0.20092592592592592" />
         <entry key="app/src/main/res/drawable/ic_fingerprint.xml" value="0.29010416666666666" />
@@ -17,6 +19,7 @@
         <entry key="app/src/main/res/font-v26/pacifico.xml" value="0.1175925925925926" />
         <entry key="app/src/main/res/font/new_fornt.xml" value="0.1" />
         <entry key="app/src/main/res/font/pacifico.xml" value="0.1175925925925926" />
+        <entry key="app/src/main/res/layout/switch_layout.xml" value="0.18645833333333334" />
       </map>
     </option>
   </component>

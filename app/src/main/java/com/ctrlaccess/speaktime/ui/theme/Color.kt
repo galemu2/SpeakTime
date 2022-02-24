@@ -27,6 +27,15 @@ val backgroundColor1: Color
     @Composable
     get() = if (isSystemInDarkTheme()) Color2 else Color.White
 
+val textClockColor: Int
+    @Composable
+    get() = if (isSystemInDarkTheme()) android.graphics.Color.WHITE else android.graphics.Color.BLACK
+
+val textClockColor1: Color
+    @Composable
+    get() = if (isSystemInDarkTheme()) Color.White else Color.Black
+
+
 val textColor1: Color
     @Composable
     get() = if (isSystemInDarkTheme()) Color.White else Color.Black

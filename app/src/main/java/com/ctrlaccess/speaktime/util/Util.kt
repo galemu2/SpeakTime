@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 const val timeFormat = "h:mm a"
-const val timeFormat1 = "h.mm.ss a"
+const val timeFormat1 = "h:mm:ss a"
 const val dateFormat = "EEEE LLLL d"
 
 var timeFormatter = SimpleDateFormat(timeFormat, Locale.getDefault())
