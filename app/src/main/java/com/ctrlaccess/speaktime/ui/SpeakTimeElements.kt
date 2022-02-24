@@ -258,7 +258,7 @@ fun SpeakTimeToolbar(viewModel: SpeakTimeViewModel) {
                             onClick = {
                                 viewModel.updateSchedule(viewModel.initialSchedule)
                                 viewModel.getSpeakTimeSchedule()
-                                // todo add default time here
+
                                 Toast.makeText(context, defaultTimeSet, Toast.LENGTH_SHORT).show()
                                 expanded = false
                             },

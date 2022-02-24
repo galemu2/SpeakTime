@@ -17,7 +17,7 @@ object Const {
 
     const val TAG = "TAG"
 
-    const val HOUR = 3600000
+    const val HOUR_GAP = 3600000
 
     const val CLOCK_TEXT_SIZE = 35f
 

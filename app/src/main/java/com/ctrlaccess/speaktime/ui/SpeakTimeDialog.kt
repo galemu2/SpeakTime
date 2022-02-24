@@ -2,6 +2,7 @@ package com.ctrlaccess.speaktime.ui
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -16,11 +17,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import com.ctrlaccess.speaktime.R
 import com.ctrlaccess.speaktime.data.models.SpeakTimeSchedule
-import com.ctrlaccess.speaktime.util.Const.HOUR
+import com.ctrlaccess.speaktime.util.*
+import com.ctrlaccess.speaktime.util.Const.TAG
 import java.util.*
 
 
-@SuppressLint("UnrememberedMutableState")
 @Composable
 fun DisplayCustomDialog(
     dialogState: (Boolean) -> Unit,
@@ -31,13 +32,12 @@ fun DisplayCustomDialog(
 
     val now = Calendar.getInstance()
 
-    var startTime by mutableStateOf(schedule.startTime)
-    var stopTime by mutableStateOf(schedule.stopTime)
+    var startTime by remember { mutableStateOf(schedule.copy().startTime) }
+    var stopTime by remember { mutableStateOf(schedule.copy().stopTime) }
 
     val context = LocalContext.current
     val timeGap = stringResource(id = R.string.time_gap)
 
-    val startTimeEarly = stringResource(id = R.string.time_start)
     AlertDialog(
         modifier = Modifier.wrapContentSize(),
         onDismissRequest = {
@@ -55,23 +55,38 @@ fun DisplayCustomDialog(
         },
         confirmButton = {
             Button(onClick = {
-                // start time is latter than now
-                if (startTime.timeInMillis > now.timeInMillis) {
 
-                    // at least 1 hour between start and end time
-                    val gap = stopTime.timeInMillis - startTime.timeInMillis
-                    if (gap > HOUR) {
-                        schedule.apply {
-                            this.startTime = startTime
-                            this.stopTime = stopTime
-                        }
-                        updateCalendar(schedule)
-                        dialogState(false)
-                    } else {
-                        Toast.makeText(context, timeGap, Toast.LENGTH_SHORT).show()
+                // 1. update calendars to today
+                startTime = updateCalendarToToday(startTime, now)
+                stopTime = updateCalendarToToday(stopTime, now)
+
+                // 2. if calendar is lower than now, increment by 1 day
+                startTime = updateCalendarDay(startTime, now)
+                stopTime = updateCalendarDay(stopTime, now)
+
+                // 3. if stop time is less than stop time, increment stop time by 1 day
+                val stopTimeIsGreater = compareStartAndStopTime(startTime, stopTime)
+
+                // 3.1 else increment stopTime by 1 day
+                if (!stopTimeIsGreater) {
+                    stopTime = incrementCalendar(stopTime)
+                }
+
+                // 4. have at least 1 hour gap
+                val oneHourGap = compareCalendar2(startTime, stopTime)
+
+                // start time is latter than now
+                if (oneHourGap) {
+                    Log.d(TAG, "DisplayCustomDialog: StartTime: ${convertToDateAndTime(startTime.timeInMillis)}")
+                    Log.d(TAG, "DisplayCustomDialog: StopTime:  ${convertToDateAndTime(stopTime.timeInMillis)}")
+                    schedule.apply {
+                        this.startTime = startTime
+                        this.stopTime = stopTime
                     }
+                    updateCalendar(schedule)
+                    dialogState(false)
                 } else {
-                    Toast.makeText(context, startTimeEarly, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, timeGap, Toast.LENGTH_SHORT).show()
                 }
 
 
@@ -90,21 +105,19 @@ fun DisplayCustomDialog(
 
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun CustomDialog(
     modifier: Modifier = Modifier,
     tabIndex: Int = 0,
-
     updateScheduleTimes: (Calendar, Calendar) -> Unit,
     schedule: SpeakTimeSchedule
 ) {
 
-    // todo BUG: end time should be next day
-    var startTimeCalendar by remember { mutableStateOf(schedule.copy().startTime) }
-    var stopTimeCalendar by remember { mutableStateOf(schedule.copy().stopTime) }
+    var startTimeCalendar by mutableStateOf(schedule.copy().startTime)
+    var stopTimeCalendar by mutableStateOf(schedule.copy().stopTime)
 
     var selectedTabIndex by remember { mutableStateOf(tabIndex) }
-
 
     val start = stringResource(id = R.string.start_time)
     val end = stringResource(id = R.string.end_time)
@@ -130,7 +143,7 @@ fun CustomDialog(
             0 -> {
                 TimePickerView(
                     modifier = modifier,
-                    cal = schedule.startTime,
+                    calendar = schedule.startTime,
                 ) { startTimeCal ->
                     startTimeCalendar = startTimeCal
                 }
@@ -139,7 +152,7 @@ fun CustomDialog(
             1 -> {
                 TimePickerView(
                     modifier = modifier,
-                    cal = schedule.stopTime,
+                    calendar = schedule.stopTime,
                 ) { stopTimeCal ->
                     stopTimeCalendar = stopTimeCal
                 }
@@ -153,21 +166,9 @@ fun CustomDialog(
 @Composable
 private fun TimePickerView(
     modifier: Modifier = Modifier,
-    cal: Calendar,
+    calendar: Calendar,
     updateCalendar: (Calendar) -> Unit,
 ) {
-
-    val today = Calendar.getInstance()
-
-    val calendar by remember {
-        mutableStateOf(cal.apply {
-            set(Calendar.YEAR, today.get(Calendar.YEAR))
-            set(Calendar.MONTH, today.get(Calendar.MONTH))
-            set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR))
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        })
-    }
 
     AndroidView(
         modifier = modifier,

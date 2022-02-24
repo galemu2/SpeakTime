@@ -22,7 +22,6 @@
 
     <!--verify good schedule time when set on dialog-->
     <string name="time_gap">You need 1 hr gap with end time</string>
-    <string name="time_start">Start time should be later time</string>
 
     <string name="speak_time_stop">SpeakTime stopped</string>
     <string name="speak_time_start">SpeakTime started</string>
