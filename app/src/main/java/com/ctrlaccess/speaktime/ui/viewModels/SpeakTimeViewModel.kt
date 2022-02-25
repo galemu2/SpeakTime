@@ -47,7 +47,7 @@ class SpeakTimeViewModel @Inject constructor(private val repository: SpeakTimeRe
     val schedule: StateFlow<RequestState<SpeakTimeSchedule>>
         get() = _schedule
 
-    /* todo
+    /* todo read about flow
     * https://proandroiddev.com/better-handling-states-between-viewmodel-and-composable-7ca14af379cb
     * */
     fun getSpeakTimeSchedule() {

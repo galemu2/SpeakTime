@@ -23,8 +23,56 @@ import java.util.*
 
 
 @Composable
-fun DisplayCustomDialog(
-    dialogState: (Boolean) -> Unit,
+fun DialogEnableSpeakTime(
+    modifier: Modifier = Modifier,
+    enableSpeakTimeDialogState: (Boolean) -> Unit,
+    enabled: Boolean,
+    updateEnabledState: (Boolean) -> Unit,
+) {
+
+    val okText = stringResource(id = R.string.ok)
+    val cancelText = stringResource(id = R.string.cancel)
+
+    val enableTitle = stringResource(id = R.string.enable_title)
+    val enableText = stringResource(id = R.string.enable_text)
+
+    val disableTitle = stringResource(id = R.string.disable_title)
+    val disableText = stringResource(id = R.string.disable_text)
+
+    AlertDialog(
+        modifier = modifier,
+        onDismissRequest = {
+            enableSpeakTimeDialogState(false)
+        },
+        title = { Text(text = if (enabled) disableTitle else enableTitle) },
+        text = { Text(text = if (enabled) disableText else enableText) },
+        confirmButton = {
+
+            Button(onClick = {
+                updateEnabledState(!enabled)
+                enableSpeakTimeDialogState(false)
+
+            }) {
+                Text(text = okText)
+            }
+
+        },
+        dismissButton = {
+
+            Button(
+                onClick = { enableSpeakTimeDialogState(false) }
+            ) {
+                Text(text = cancelText)
+            }
+
+        }
+    )
+}
+
+
+@Composable
+fun DialogSetTime(
+    setTimeDialogState: (Boolean) -> Unit,
     schedule: SpeakTimeSchedule,
     updateCalendar: (SpeakTimeSchedule) -> Unit,
     tabIndex: Int,
@@ -41,7 +89,7 @@ fun DisplayCustomDialog(
     AlertDialog(
         modifier = Modifier.wrapContentSize(),
         onDismissRequest = {
-            dialogState(false)
+            setTimeDialogState(false)
         },
         text = {
             CustomDialog(
@@ -77,14 +125,20 @@ fun DisplayCustomDialog(
 
                 // start time is latter than now
                 if (oneHourGap) {
-                    Log.d(TAG, "DisplayCustomDialog: StartTime: ${convertToDateAndTime(startTime.timeInMillis)}")
-                    Log.d(TAG, "DisplayCustomDialog: StopTime:  ${convertToDateAndTime(stopTime.timeInMillis)}")
+                    Log.d(
+                        TAG,
+                        "DisplayCustomDialog: StartTime: ${convertToDateAndTime(startTime.timeInMillis)}"
+                    )
+                    Log.d(
+                        TAG,
+                        "DisplayCustomDialog: StopTime:  ${convertToDateAndTime(stopTime.timeInMillis)}"
+                    )
                     schedule.apply {
                         this.startTime = startTime
                         this.stopTime = stopTime
                     }
                     updateCalendar(schedule)
-                    dialogState(false)
+                    setTimeDialogState(false)
                 } else {
                     Toast.makeText(context, timeGap, Toast.LENGTH_SHORT).show()
                 }
@@ -96,7 +150,7 @@ fun DisplayCustomDialog(
         },
         dismissButton = {
             Button(onClick = {
-                dialogState(false)
+                setTimeDialogState(false)
             }) {
                 Text(text = stringResource(id = R.string.cancel))
             }

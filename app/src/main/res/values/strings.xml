@@ -18,6 +18,12 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
 
+    <!--enable/disable speak time Alert dialog text-->
+    <string name="enable_title">Enabling Speak Time</string>
+    <string name="disable_title">Disabling Speak Time</string>
+    <string name="enable_text">Do you want to enable SpeakTime?</string>
+    <string name="disable_text">Do you want to disable SpeakTime?</string>
+
     <string name="background_img_honeycomb">background image honeycomb</string>
 
     <!--verify good schedule time when set on dialog-->
@@ -25,7 +31,8 @@
 
     <string name="speak_time_stop">SpeakTime stopped</string>
     <string name="speak_time_start">SpeakTime started</string>
-    <string name="channel_description">Channel for alarm manager</string>
     <string name="default_time">Default time set</string>
+
+    <string name="channel_description">Channel for alarm manager</string>
 
 </resources>

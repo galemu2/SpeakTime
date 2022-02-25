@@ -53,7 +53,7 @@ fun SpeakTimeContent(
     var tabIndex by remember { mutableStateOf(0) }
     if (dialogState) {
 
-        DisplayCustomDialog(
+        DialogSetTime(
             tabIndex = tabIndex,
             schedule = schedule.copy(),
             updateCalendar = { newSchedule ->
@@ -70,37 +70,24 @@ fun SpeakTimeContent(
                 )
 
             },
-            dialogState = {
+            setTimeDialogState = {
                 viewModel.getSpeakTimeSchedule()
                 dialogState = it
             })
     }
 
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Image(
-            modifier = Modifier.fillMaxHeight(),
-            alpha = 0.2f,
-            painter = painterResource(
-                id = R.drawable.ic_honeycomb
-            ),
-            contentScale = ContentScale.Crop,
-            contentDescription = stringResource(id = R.string.background_img_honeycomb)
-        )
-        SpeakTimeItem(
-            modifier = Modifier
-                .background(color = Color.Transparent),
-            schedule = schedule,
-            dialogState = { state, idx ->
-                dialogState = state
-                tabIndex = idx
-            },
+    var enableSpeakTimeDialogState by remember { mutableStateOf(false) }
+    if (enableSpeakTimeDialogState) {
+        DialogEnableSpeakTime(
             enabled = schedule.enabled,
-            updateEnabled = { isEnabled ->
+            enableSpeakTimeDialogState = { state ->
+                enableSpeakTimeDialogState = state
+            },
+            updateEnabledState = { enabledState ->
                 schedule.apply {
-                    enabled = isEnabled
-                    if (isEnabled) {
-
+                    enabled = enabledState
+                    if (enabledState) {
+                        // todo need to remove some code here
                         val today = Calendar.getInstance()
                         val startTime = startTime.timeInMillis
                         val stopTime = stopTime.timeInMillis
@@ -143,6 +130,33 @@ fun SpeakTimeContent(
             }
         )
     }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            modifier = Modifier.fillMaxHeight(),
+            alpha = 0.2f,
+            painter = painterResource(
+                id = R.drawable.ic_honeycomb
+            ),
+            contentScale = ContentScale.Crop,
+            contentDescription = stringResource(id = R.string.background_img_honeycomb)
+        )
+        SpeakTimeItem(
+            modifier = Modifier
+                .background(color = Color.Transparent),
+            schedule = schedule,
+            dialogState = { state, idx ->
+                dialogState = state
+                tabIndex = idx
+            },
+            enabled = schedule.enabled,
+            enableSpeakTimeDialogState = enableSpeakTimeDialogState,
+            updateEnableSpeakTime = { enabledDialogState  ->
+                enableSpeakTimeDialogState = enabledDialogState
+
+
+            }
+        )
+    }
 }
 
 
@@ -151,8 +165,9 @@ fun SpeakTimeItem(
     modifier: Modifier = Modifier,
     dialogState: (Boolean, Int) -> Unit,
     enabled: Boolean,
-    updateEnabled: (Boolean) -> Unit,
     schedule: SpeakTimeSchedule,
+    enableSpeakTimeDialogState: Boolean,
+    updateEnableSpeakTime: (Boolean ) -> Unit
 ) {
 
     Column(
@@ -210,7 +225,11 @@ fun SpeakTimeItem(
                 .weight(3f)
         ) {
 
-            CancelSpeakTime(enabled = enabled, updateEnabled = updateEnabled)
+            EnableSpeakTimeButton(
+                enabled = enabled,
+                enabledDialogState = enableSpeakTimeDialogState,
+                updateEnabledDialogState = updateEnableSpeakTime,
+            )
         }
 
     }

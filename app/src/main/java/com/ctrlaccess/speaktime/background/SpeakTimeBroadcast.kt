@@ -31,7 +31,6 @@ class SpeakTimeBroadcast : BroadcastReceiver(), TextToSpeech.OnInitListener {
 
     override fun onReceive(context: Context, intent: Intent) {
 
-        Toast.makeText(context, "inside broadcast", Toast.LENGTH_SHORT).show()
         if (intent.action == ACTION_TRIGGER_SPEAK_TIME) {
             val cal = Calendar.getInstance()
             date = convertToDate(cal.timeInMillis)

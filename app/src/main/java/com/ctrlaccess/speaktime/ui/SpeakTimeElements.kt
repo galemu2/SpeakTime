@@ -1,6 +1,5 @@
 package com.ctrlaccess.speaktime.ui
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.IntentFilter
 import android.widget.Toast
@@ -32,27 +31,26 @@ import com.ctrlaccess.speaktime.util.Const.ACTION_TRIGGER_SPEAK_TIME
 import com.ctrlaccess.speaktime.util.convertToTime
 import java.util.*
 
-@SuppressLint("UnrememberedMutableState")
 @Composable
-fun CancelSpeakTime(
+fun EnableSpeakTimeButton(
     modifier: Modifier = Modifier,
     enabled: Boolean,
-    updateEnabled: (Boolean) -> Unit
+    enabledDialogState: Boolean,
+    updateEnabledDialogState: (Boolean) -> Unit
 ) {
 
 
-    var isChecked by mutableStateOf(enabled)
 
     val enabledText = stringResource(id = R.string.enable)
     val disabledText = stringResource(id = R.string.disable)
+
     Button(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(16.dp),
         onClick = {
-            isChecked = !isChecked
-            updateEnabled(isChecked)
+            updateEnabledDialogState(!enabledDialogState)
         },
         elevation = ButtonDefaults.elevation(
             defaultElevation = 4.dp
@@ -67,7 +65,7 @@ fun CancelSpeakTime(
             modifier = Modifier
                 .align(CenterVertically)
                 .wrapContentSize(),
-            text = if (isChecked) disabledText else enabledText,
+            text = if (enabled) disabledText else enabledText,
             color = Color.White
         )
     }
