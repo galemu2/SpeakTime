@@ -1,4 +1,4 @@
-package com.ctrlaccess.speaktime.ui
+package com.ctrlaccess.speaktime.ui.screens.main
 
 import android.content.Intent
 import android.content.IntentFilter

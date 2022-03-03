@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.first
 import java.util.*
 import javax.inject.Inject
 
+// todo check if enabled to restart alarmManager
 @HiltWorker
 class SpeakTimeRestoreWorker @AssistedInject constructor(
     @Assisted context: Context,

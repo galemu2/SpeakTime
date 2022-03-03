@@ -1,4 +1,4 @@
-package com.ctrlaccess.speaktime.ui
+package com.ctrlaccess.speaktime.ui.screens.main
 
 import android.annotation.SuppressLint
 import android.os.Build
