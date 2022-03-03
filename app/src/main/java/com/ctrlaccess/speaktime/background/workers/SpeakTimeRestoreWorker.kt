@@ -7,6 +7,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.ctrlaccess.speaktime.background.SpeakTimeService
 import com.ctrlaccess.speaktime.data.repositories.SpeakTimeRepository
+import com.ctrlaccess.speaktime.util.Const.WORKER_ENABLED
 import com.ctrlaccess.speaktime.util.Const.WORKER_START_TIME
 import com.ctrlaccess.speaktime.util.Const.WORKER_STOP_TIME
 import dagger.assisted.Assisted
@@ -27,6 +28,12 @@ class SpeakTimeRestoreWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         val appContext = applicationContext
+
+        val enabled = inputData.getBoolean(WORKER_ENABLED, true)
+
+        if (!enabled) {
+            return Result.failure()
+        }
         val startTime = inputData.getLong(WORKER_START_TIME, -1L)
         val stopTime = inputData.getLong(WORKER_STOP_TIME, -1L)
         if (startTime == -1L || stopTime == -1L) {

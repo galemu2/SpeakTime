@@ -127,6 +127,8 @@ class SpeakTimeService : Service() {
             .setContentText(contentDescription)
             .setSmallIcon(R.drawable.ic_watch)
             .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setSilent(true)
             .build()
         startForeground(1, notification)
 

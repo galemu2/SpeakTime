@@ -20,13 +20,15 @@ class SpeakTimeApp : Application(), Configuration.Provider {
         super.onCreate()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "speakTimeNotificationChannel"
-            val description =getString(R.string.channel_description)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val description = getString(R.string.channel_description)
+            val importance = NotificationManager.IMPORTANCE_LOW
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 name,
                 importance
             )
+            channel.enableLights(false)
+            channel.enableVibration(false)
 
             channel.description = description
 

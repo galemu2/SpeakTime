@@ -1,16 +1,14 @@
 package com.ctrlaccess.speaktime.background.workers
 
 import android.content.Context
-import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.ctrlaccess.speaktime.data.repositories.SpeakTimeRepository
-import com.ctrlaccess.speaktime.util.Const.TAG
+import com.ctrlaccess.speaktime.util.Const.WORKER_ENABLED
 import com.ctrlaccess.speaktime.util.Const.WORKER_START_TIME
 import com.ctrlaccess.speaktime.util.Const.WORKER_STOP_TIME
-import com.ctrlaccess.speaktime.util.convertToTime
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -33,19 +31,18 @@ class SpeakTimeWorker @AssistedInject constructor(
 
             val startTime = schedule.startTime.timeInMillis
             val stopTime = schedule.stopTime.timeInMillis
+            val enabled = schedule.enabled
 
             val outputData = workDataOf(
                 WORKER_STOP_TIME to stopTime,
-                WORKER_START_TIME to startTime
+                WORKER_START_TIME to startTime,
+                WORKER_ENABLED to enabled
             )
-
-            Log.d(TAG, "doWork: ${convertToTime(startTime)}")
-            Log.d(TAG, "doWork: ${convertToTime(stopTime)}")
 
             Result.success(outputData)
 
         } catch (e: Throwable) {
-            Log.d(TAG, "doWork: Result.failure: ${e.message}")
+
             Result.failure()
         }
 

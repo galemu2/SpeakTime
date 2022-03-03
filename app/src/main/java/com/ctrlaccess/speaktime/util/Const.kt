@@ -7,6 +7,7 @@ object Const {
 
     const val WORKER_START_TIME = "WORKER-START-TIME"
     const val WORKER_STOP_TIME = "WORKER-STOP-TIME"
+    const val WORKER_ENABLED = "woker_enabled_disabled"
 
     const val CHANNEL_ID = "speakTime channel ID"
 

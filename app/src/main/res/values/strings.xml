@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Speak Time</string>
+    <string name="app_name">SpeakTime</string>
     <string name="app_icon">Application Icon - Watch</string>
 
     <!--UI text-->
@@ -35,5 +35,6 @@
 
     <string name="channel_description">Channel for alarm manager</string>
     <string name="splash_screen">Splash Screen: Watch</string>
+    <string name="speakTime_reboot">SpeakTime reboot</string>
 
 </resources>
