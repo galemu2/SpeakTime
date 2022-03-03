@@ -1,4 +1,4 @@
-package com.ctrlaccess.speaktime.ui.screens.main
+package com.ctrlaccess.speaktime.screens.main
 
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable

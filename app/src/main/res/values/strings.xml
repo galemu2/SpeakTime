@@ -34,5 +34,6 @@
     <string name="default_time">Default time set</string>
 
     <string name="channel_description">Channel for alarm manager</string>
+    <string name="splash_screen">Splash Screen: Watch</string>
 
 </resources>

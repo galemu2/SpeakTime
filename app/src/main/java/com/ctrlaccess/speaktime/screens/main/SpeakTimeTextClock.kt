@@ -1,4 +1,4 @@
-package com.ctrlaccess.speaktime.ui.screens.main
+package com.ctrlaccess.speaktime.screens.main
 
 import android.view.Gravity
 import android.widget.TextClock
