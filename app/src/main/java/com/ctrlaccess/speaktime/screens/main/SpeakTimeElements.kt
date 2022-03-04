@@ -184,7 +184,6 @@ fun StopTime(
                 fontSize = Typography.h4.fontSize
             )
         }
-
     }
 }
 
