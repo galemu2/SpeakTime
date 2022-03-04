@@ -32,7 +32,7 @@ fun SplashScreen(
         navigate()
     }
 
-    val img = if (isSystemInDarkTheme()) R.drawable.ic_watch_white else R.drawable.ic_watch
+    val img = if (isSystemInDarkTheme()) R.drawable.ic_watch_white else R.drawable.ic_watch_black
 
 
     Box(

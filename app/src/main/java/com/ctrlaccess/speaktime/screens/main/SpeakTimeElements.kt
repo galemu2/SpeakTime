@@ -222,7 +222,7 @@ fun SpeakTimeToolbar(viewModel: SpeakTimeViewModel) {
                             )
 
                     },
-                painter = painterResource(id = R.drawable.ic_watch),
+                painter = painterResource(id = R.drawable.ic_watch_black),
                 contentDescription = stringResource(
                     id = R.string.app_icon
                 )

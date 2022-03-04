@@ -125,7 +125,7 @@ class SpeakTimeService : Service() {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(contentTitle)
             .setContentText(contentDescription)
-            .setSmallIcon(R.drawable.ic_watch)
+            .setSmallIcon(R.drawable.ic_watch_black)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setSilent(true)
