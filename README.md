@@ -8,7 +8,7 @@ The main purpose of the app is to listen to the time at night without having to 
 
 ## Features used
 
-1. WorkManagr to chain unique work to read schedule time and update if needed
+1. WorkManager to chain unique work to read schedule time and update if needed
 
 2. foreground service to register broadcast receiver to listen to protected intent sent by the system
 

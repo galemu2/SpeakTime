@@ -87,7 +87,7 @@ fun SpeakTimeContent(
                 schedule.apply {
                     enabled = enabledState
                     if (enabledState) {
-                        // todo need to remove some code here
+
                         val today = Calendar.getInstance()
                         val startTime = startTime.timeInMillis
                         val stopTime = stopTime.timeInMillis

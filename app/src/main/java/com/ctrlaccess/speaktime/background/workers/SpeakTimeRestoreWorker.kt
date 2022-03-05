@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.first
 import java.util.*
 import javax.inject.Inject
 
-// todo check if enabled to restart alarmManager
+
 @HiltWorker
 class SpeakTimeRestoreWorker @AssistedInject constructor(
     @Assisted context: Context,
@@ -29,7 +29,7 @@ class SpeakTimeRestoreWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         val appContext = applicationContext
 
-        val enabled = inputData.getBoolean(WORKER_ENABLED, true)
+        val enabled = inputData.getBoolean(WORKER_ENABLED, false)
 
         if (!enabled) {
             return Result.failure()
